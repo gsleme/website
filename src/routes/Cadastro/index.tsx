@@ -1,6 +1,8 @@
 function Cadastro() {
   return (
-    <div>Cadastro</div>
+    <main>
+        
+    </main>
   )
 }
 

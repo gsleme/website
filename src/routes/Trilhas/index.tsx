@@ -1,6 +1,8 @@
 function Trilhas() {
   return (
-    <div>Trilhas</div>
+    <main>
+        
+    </main>
   )
 }
 

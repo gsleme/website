@@ -1,6 +1,8 @@
 function Modulo() {
   return (
-    <div>Modulo</div>
+    <main>
+        
+    </main>
   )
 }
 

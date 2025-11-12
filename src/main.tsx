@@ -10,13 +10,14 @@ import ErrorPage from './routes/ErrorPage/index.tsx'
 
 // import de rotas
 import Cadastro from './routes/Cadastro/index.tsx'
-import Login from './routes/Login/index.tsx'
-import Home from './routes/Home/index.tsx'
 import Contato from './routes/Contato/index.tsx'
 import Faq from './routes/Faq/index.tsx'
+import Home from './routes/Home/index.tsx'
+import LandingPage from './routes/LandingPage/index.tsx'
+import Login from './routes/Login/index.tsx'
+import Modulo from './routes/Modulo/index.tsx'
 import Sobre from './routes/Sobre/index.tsx'
 import Trilhas from './routes/Trilhas/index.tsx'
-import Modulo from './routes/Modulo/index.tsx'
 
 const router = createBrowserRouter([
   {
@@ -27,11 +28,12 @@ const router = createBrowserRouter([
       { path: '/cadastrar', element: <Cadastro/> },
       { path: '/contato', element: <Contato/> },
       { path: '/perguntas-frequentes', element: <Faq/> },
-      { path: '/', element: <Home/> },
+      { path: '/dashboard', element: <Home/> },
+      { path: '/', element: <LandingPage/> },
       { path: '/entrar', element: <Login/> },
+      { path: '/trilhas/:trilha/:modulo', element: <Modulo/> },
       { path: '/sobre-nos', element: <Sobre/> },
-      { path: '/trilhas', element: <Trilhas/> },
-      { path: '/trilhas/:trilha/:modulo', element: <Modulo/> }
+      { path: '/trilhas', element: <Trilhas/> }
     ]
   }
 ])

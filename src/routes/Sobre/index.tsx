@@ -1,6 +1,8 @@
 function Sobre() {
   return (
-    <div>Sobre</div>
+    <main>
+        
+    </main>
   )
 }
 
