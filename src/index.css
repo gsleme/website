@@ -1,0 +1,13 @@
+/* import de tailwind */
+@import "tailwindcss";
+
+/* import de fonte */
+@font-face {
+    font-family: 'Roboto';
+    src: url('/fonts/Roboto/Roboto.ttf') format('ttf');
+}
+
+@font-face {
+    font-family: 'Roboto';
+    src: url('/fonts/Roboto/Roboto.ttf') format('ttf');
+}
