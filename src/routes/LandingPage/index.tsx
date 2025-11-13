@@ -5,13 +5,13 @@ function LandingPage () {
 
   return (
     <main>
-      <section>
+      <section className='lp-section'>
         <h1>
           Esteja na direção certa para sua carreira com a <span>Leme</span>
         </h1>
         <button onClick={() => navigate('/cadastrar')}>Começar</button>
       </section>
-      <section>
+      <section className='lp-section'>
         <img src='' alt='' />
         <div>
           <h2>Se atualize de forma gamificada</h2>
@@ -22,7 +22,7 @@ function LandingPage () {
           </p>
         </div>
       </section>
-      <section>
+      <section className='lp-section'>
         <div>
           <h2>Se atualize de forma gamificada</h2>
           <p>
@@ -65,7 +65,7 @@ function LandingPage () {
           </li>
         </ul>
       </section>
-      <section>
+      <section className='lp-section'>
         <h2>Veja o que estão falando sobre a Leme</h2>
         <div>
           <ul>
@@ -92,7 +92,7 @@ function LandingPage () {
           </ul>
         </div>
       </section>
-      <section>
+      <section className='lp-section'>
         <div>
           <img src='' alt='' />
           <h2>Encontre uma direção personalizada para você</h2>
@@ -103,7 +103,7 @@ function LandingPage () {
           </p>
         </div>
       </section>
-      <section>
+      <section className='lp-section'>
         <h2>Alguma proposta interessante? Fale com a gente</h2>
         <form onSubmit={() => alert()}>
           <fieldset>
@@ -115,7 +115,7 @@ function LandingPage () {
           <button type='submit'>Vamos lá</button>
         </form>
       </section>
-      <section>
+      <section className='lp-section'>
         <img src='' alt='' />
         <p>Você na direção da sua carreira</p>
         <button onClick={() => navigate('/cadastrar')}>Começar</button>
