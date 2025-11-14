@@ -1,34 +1,60 @@
 /* import de tailwind */
-@import "tailwindcss";
+@import 'tailwindcss';
 
 /* import de fonte */
 @font-face {
-    font-family: 'Roboto';
-    src: url('./assets/fonts/Roboto/Roboto.woff2') format('woff2');
+  font-family: 'Roboto';
+  src: url('./assets/fonts/Roboto/Roboto.woff2') format('woff2');
 }
 
 @font-face {
-    font-family: 'Staatliches';
-    src: url('./assets/fonts/Staatliches/Staatliches.woff2') format('woff2');
+  font-family: 'Staatliches';
+  src: url('./assets/fonts/Staatliches/Staatliches.woff2') format('woff2');
 }
 
 @theme {
-    --font-staatliches: 'Staatliches', sans-serif;
-    --font-roboto: 'Roboto', sans-serif;
+  --font-staatliches: 'Staatliches', sans-serif;
+  --font-roboto: 'Roboto', sans-serif;
 }
 
 @layer base {
-    * {
-        @apply font-roboto;
-    }
+  * {
+    @apply font-roboto;
+  }
 
-    main {
-        @apply px-8;
-    }
+  main {
+    @apply px-6 min-h-[98vh] ;
+  }
 }
 
 @layer components {
-    .lp-section {
-        @apply min-h-screen flex flex-col justify-center items-center;
-    }
+  .lp-section {
+    @apply min-h-[90vh] flex flex-col justify-center items-center;
+  }
+
+  .botao-sm {
+    @apply flex items-center justify-center p-2 min-w-20 rounded-lg bg-purple-600 cursor-pointer transition-all duration-300 ease-linear hover:bg-purple-200;
+  }
+
+  .botao-md {
+    @apply p-4 bg-purple-900 rounded-xl cursor-pointer transition-all duration-300 ease-linear hover:bg-purple-200;
+  }
+
+  .seta-redirect {
+    @apply p-4 text-lg rounded-full bg-gray-500 cursor-pointer transition-all duration-200 ease-in hover:scale-110;
+  }
+}
+
+@layer utilities {
+  .transition-300 {
+    @apply transition-all duration-300 ease-in;
+  }
+
+  .transition-full {
+    @apply transition-all ease-in;
+  }
+
+  .border-gradient-purple {
+    border-image: linear-gradient(to right, #a855f7, transparent) 1;
+  }
 }
