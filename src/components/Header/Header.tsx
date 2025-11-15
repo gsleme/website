@@ -33,15 +33,19 @@ function Header ({ visivel }: { visivel: boolean }) {
 
   if (locationLP || locationEntrar || locationCadastrar) {
     return (
-      <header className='flex justify-center items-center py-2 z-2'>
-        <img src={logo} alt='Logomarca da Leme' className='h-14' />
+      <header className='flex justify-center items-center py-2 z-2 w-screen bg-white'>
+        <Link to='/'>
+          <img src={logo} alt='Logomarca da Leme' className='h-14' />
+        </Link>
 
         <div
           className={`flex justify-between items-center fixed transition-full duration-400 w-screen bg-white px-6 py-2 -mt-4 ${
             !visivel && locationLP ? 'translate-y-0' : '-translate-y-50'
           }`}
         >
-          <img src={logo} alt='Logomarca da Leme' className='h-10' />
+          <Link to='/'>
+            <img src={logo} alt='Logomarca da Leme' className='h-10' />
+          </Link>
           <nav className='flex gap-2 items-center'>
             <Link to='/entrar' className='botao-sm'>
               Entrar
@@ -59,8 +63,10 @@ function Header ({ visivel }: { visivel: boolean }) {
     <header className='flex flex-col items-center w-screen fixed z-1'>
       <div className='flex flex-col justify-center items-center px-6 py-2 w-full fixed bg-white z-2'>
         <div className='flex justify-between items-center w-full bg-white z-3'>
-          <img src={logo} alt='Logomarca da Leme' className='h-14' />
-          <div className='flex gap-4 transition-300 text-4xl [&_svg]:cursor-pointer [&_svg]:hover:scale-110'>
+          <Link to='/dashboard'>
+            <img src={logo} alt='Logomarca da Leme' className='h-10' />
+          </Link>
+          <div className='flex gap-4 transition-300 text-3xl [&_svg]:cursor-pointer [&_svg]:hover:scale-110'>
             <button onClick={() => switchState('buscar')}>
               {buscar ? <RiCloseLargeLine /> : <LuSearch />}
             </button>
@@ -83,7 +89,7 @@ function Header ({ visivel }: { visivel: boolean }) {
             />
             <button
               type='submit'
-              className='text-4xl cursor-pointer transition-300 opacity-30 hover:opacity-100'
+              className='text-3xl cursor-pointer transition-300 opacity-30 hover:opacity-100'
             >
               <LuSearch />
             </button>
@@ -97,12 +103,36 @@ function Header ({ visivel }: { visivel: boolean }) {
         >
           <nav>
             <ul className='flex flex-col p-4 gap-4'>
-              <NavItem nome='Home' link='/dashboard' onClick={() => switchState('menu')}/>
-              <NavItem nome='Trilhas' link='/trilhas' onClick={() => switchState('menu')}/>
-              <NavItem nome='Sobre a Leme' link='/sobre-nos' onClick={() => switchState('menu')}/>
-              <NavItem nome='FAQ - Perguntas frequentes' link='/perguntas-frequentes' onClick={() => switchState('menu')}/>
-              <NavItem nome='Fale com a gente' link='/contato' onClick={() => switchState('menu')}/>
-              <NavItem nome='Minha conta' link='/minha-conta' onClick={() => switchState('menu')}/>
+              <NavItem
+                nome='Home'
+                link='/dashboard'
+                onClick={() => switchState('menu')}
+              />
+              <NavItem
+                nome='Trilhas'
+                link='/trilhas'
+                onClick={() => switchState('menu')}
+              />
+              <NavItem
+                nome='Sobre a Leme'
+                link='/sobre-nos'
+                onClick={() => switchState('menu')}
+              />
+              <NavItem
+                nome='FAQ - Perguntas frequentes'
+                link='/perguntas-frequentes'
+                onClick={() => switchState('menu')}
+              />
+              <NavItem
+                nome='Fale com a gente'
+                link='/contato'
+                onClick={() => switchState('menu')}
+              />
+              <NavItem
+                nome='Minha conta'
+                link='/minha-conta'
+                onClick={() => switchState('menu')}
+              />
               <li>
                 <button
                   onClick={() => {}}

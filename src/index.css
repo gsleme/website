@@ -18,18 +18,38 @@
 }
 
 @layer base {
+  html {
+    @apply text-[90%] md:text-[100%] lg:text-[110%];
+  }
+
   * {
     @apply font-roboto;
   }
 
   main {
-    @apply px-6 min-h-[98vh] ;
+    @apply px-6 min-h-[98vh] max-w-250;
   }
 }
 
 @layer components {
   .lp-section {
-    @apply min-h-[90vh] flex flex-col justify-center items-center;
+    @apply min-h-[90vh] flex flex-col justify-center items-center py-4;
+  }
+
+  .lp-image {
+    @apply h-80 my-4;
+  }
+
+  .lp-info {
+    @apply flex flex-col md:max-w-120 md:mx-8 gap-4;
+
+    & p {
+      @apply md:max-w-4/5;
+    }
+  }
+
+  .lp-line {
+    @apply h-1 bg-white rounded-full;
   }
 
   .botao-sm {
@@ -37,11 +57,23 @@
   }
 
   .botao-md {
-    @apply p-4 bg-purple-900 rounded-xl cursor-pointer transition-all duration-300 ease-linear hover:bg-purple-200;
+    @apply p-4 bg-purple-900 rounded-lg cursor-pointer transition-all duration-300 ease-linear hover:bg-purple-200;
+  }
+
+  .entry {
+    @apply p-3 bg-white rounded focus:outline-none;
   }
 
   .seta-redirect {
     @apply p-4 text-lg rounded-full bg-gray-500 cursor-pointer transition-all duration-200 ease-in hover:scale-110;
+  }
+
+  .titulo-1 {
+    @apply font-staatliches text-4xl font-extrabold;
+  }
+
+  .fim-convexo {
+    @apply relative before:content-["-"] before:bg-white before:absolute before:bottom-0 before:right-full before:rounded-full before:text-white before:size-10 after:content-["-"] after:bg-white after:absolute after:bottom-0 after:left-full after:rounded-full after:text-white after:size-10;
   }
 }
 
