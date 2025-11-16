@@ -5,17 +5,32 @@ import logo from '../../assets/images/logo.png'
 import image1 from '../../assets/images/image1.png'
 import image2 from '../../assets/images/image2.png'
 import image3 from '../../assets/images/image3.png'
+import image4 from '../../assets/images/image4.png'
 
 // import de icones
 import { FaArrowDown } from 'react-icons/fa'
 import { RiCloseLargeLine } from 'react-icons/ri'
 import { Link, useNavigate, useOutletContext } from 'react-router-dom'
 import { BiSolidLeftArrow, BiSolidRightArrow } from 'react-icons/bi'
+import ErrorAlert from '../../components/ErrorAlert/ErrorAlert'
+import { useForm, type SubmitHandler } from 'react-hook-form'
+import type { tipoMensagem } from '../../types/tiposMensagem'
 
 function LandingPage () {
   const navigate = useNavigate()
   const [contato, setContato] = useState(false)
   const [indice, setIndice] = useState(1)
+  const {
+    register,
+    reset,
+    handleSubmit,
+    formState: { errors }
+  } = useForm<tipoMensagem>()
+
+  const onSubmit: SubmitHandler<tipoMensagem> = async data => {
+    console.log(data)
+    setContato(true)
+  }
 
   const depoimentos: {
     foto: string
@@ -189,10 +204,7 @@ function LandingPage () {
           `}
             >
               {depoimentos.map((depoimento, index) => (
-                <li
-                  key={index}
-                  className='flex flex-col gap-8 my-8 min-w-60'
-                >
+                <li key={index} className='flex flex-col gap-8 my-8 min-w-60'>
                   <div className='flex gap-4'>
                     <img
                       src={depoimento.foto}
@@ -211,7 +223,7 @@ function LandingPage () {
               ))}
             </ul>
           </div>
-          <div className='flex justify-between gap-4 [&_button]:cursor-pointer [&_button]:hover:scale-110 text-2xl text-gray-400'>
+          <div className='flex justify-between gap-4 [&_button]:hover:scale-110 text-2xl text-gray-400'>
             <button onClick={() => setIndice(indice == 0 ? 2 : indice - 1)}>
               <BiSolidLeftArrow className='hover:text-gray-600 active:text-gray-800' />
             </button>
@@ -257,29 +269,49 @@ function LandingPage () {
           </p>
         </div>
         <form
-          onSubmit={() => setContato(true)}
+          onSubmit={handleSubmit(onSubmit)}
           className='formulario bg-purple-800 w-full max-w-80 fim-convexo'
         >
           <fieldset>
-            <input
-              type='text'
-              id='idNome'
-              placeholder='Seu nome'
-            />
-            <input
-              type='text'
-              id='idEmail'
-              placeholder='Seu email'
-            />
-            <input
-              type='text'
-              id='idAssunto'
-              placeholder='Assunto'
-            />
-            <textarea
-              id='idMensagem'
-              placeholder='Do que precisa?'
-            ></textarea>
+            <div>
+              <input
+                type='text'
+                id='nome'
+                placeholder='Seu nome'
+                className={errors.nome?.message && 'red-line'}
+                {...register('nome', { required: 'Campo obrigatório' })}
+              />
+              <ErrorAlert mensagem={errors.nome?.message} />
+            </div>
+            <div>
+              <input
+                type='text'
+                id='email'
+                placeholder='Seu email'
+                className={errors.email?.message && 'red-line'}
+                {...register('email', { required: 'Campo obrigatório' })}
+              />
+              <ErrorAlert mensagem={errors.email?.message} />
+            </div>
+            <div>
+              <input
+                type='text'
+                id='assunto'
+                placeholder='Assunto'
+                className={errors.assunto?.message && 'red-line'}
+                {...register('assunto', { required: 'Campo obrigatório' })}
+              />
+              <ErrorAlert mensagem={errors.assunto?.message} />
+            </div>
+            <div>
+              <textarea
+                id='mensagem'
+                placeholder='Do que precisa?'
+                className={errors.mensagem?.message && 'red-line'}
+                {...register('mensagem', { required: 'Campo obrigatório' })}
+              ></textarea>
+              <ErrorAlert mensagem={errors.mensagem?.message} />
+            </div>
           </fieldset>
           <button type='submit' className='botao-md'>
             Vamos lá
@@ -307,14 +339,20 @@ function LandingPage () {
         }`}
       >
         <div
-          className={`transition-full duration-400 bg-white rounded p-4 ${
+          className={`transition-full duration-400 bg-white p-4 max-w-100 rounded-4xl ${
             contato ? 'translate-y-0' : 'translate-y-100'
           }`}
         >
-          <button onClick={() => setContato(false)}>
+          <button
+            onClick={() => {
+              setContato(false)
+              reset()
+            }}
+            className='p-2 rounded-full bg-purple-500 my-4'
+          >
             <RiCloseLargeLine />
           </button>
-          <div>
+          <div className='flex flex-col items-center'>
             <h2 className='titulo-1'>
               É isso ai! Seu primeiro passo foi tomado
             </h2>
@@ -323,8 +361,8 @@ function LandingPage () {
               Enquanto isso...
             </p>
             <div>
-              <img src='' alt='' />
-              <div>
+              <img src={image4} alt='Imagem de apoio' className='h-60 py-4' />
+              <div className='flex items-center justify-between'>
                 <Link className='botao-sm' to='/entrar'>
                   Entrar
                 </Link>

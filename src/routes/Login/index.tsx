@@ -1,9 +1,21 @@
 import { useState } from 'react'
+import { useForm, type SubmitHandler } from 'react-hook-form'
 import { IoMdEye, IoMdEyeOff } from 'react-icons/io'
 import { Link } from 'react-router-dom'
+import type { tipoUserForm } from '../../types/tiposUsuario'
+import ErrorAlert from '../../components/ErrorAlert/ErrorAlert'
 
 function Login () {
   const [mostrar, setMostrar] = useState(false)
+  const {
+    register,
+    handleSubmit,
+    formState: { errors }
+  } = useForm<tipoUserForm>()
+
+  const onSubmit: SubmitHandler<tipoUserForm> = async data => {
+    console.log(data)
+  }
 
   return (
     <main className='pt-10 gap-8'>
@@ -18,30 +30,50 @@ function Login () {
         </p>
       </div>
       <form
-        onSubmit={() => {}}
+        onSubmit={handleSubmit(onSubmit)}
         className='formulario rounded-2xl bg-purple-400'
       >
         <fieldset>
-          <input type='email' id='email' placeholder='Email' />
-          <input
-            type={mostrar ? 'text' : 'password'}
-            id='senha'
-            placeholder='Senha'
-            className='w-full'
-          />
-          <button
+          <div>
+            <input
+              type='email'
+              id='email'
+              placeholder='Email'
+              className={errors.email?.message && 'red-line'}
+              {...register('email', { required: 'Campo obrigatório' })}
+            />
+            <ErrorAlert mensagem={errors.email?.message} />
+          </div>
+          <div>
+            <input
+              type={mostrar ? 'text' : 'password'}
+              id='senha'
+              placeholder='Senha'
+              className={errors.senha?.message && 'red-line'}
+              {...register('senha', { required: 'Campo obrigatório' })}
+            />
+            <ErrorAlert mensagem={errors.senha?.message} />
+          </div>
+          <div
             onClick={() => (mostrar ? setMostrar(false) : setMostrar(true))}
-            className='flex items-center gap-2 text-sm cursor-pointer hover:font-bold'
+            className='text-sm text-white cursor-pointer hover:font-bold [&_div]:flex [&_div]:items-center [&_div]:gap-2'
           >
             {mostrar ? (
-              <IoMdEyeOff className='text-lg' />
+              <div>
+                <IoMdEyeOff className='text-lg' />
+                Esconder senha
+              </div>
             ) : (
-              <IoMdEye className='text-lg' />
+              <div>
+                <IoMdEye className='text-lg' />
+                Mostrar senha
+              </div>
             )}
-            Mostrar senha
-          </button>
+          </div>
         </fieldset>
-        <button type='submit' className='botao-md'>Entrar</button>
+        <button type='submit' className='botao-md'>
+          Entrar
+        </button>
       </form>
     </main>
   )

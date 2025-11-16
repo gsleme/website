@@ -66,7 +66,7 @@ function Header ({ visivel }: { visivel: boolean }) {
           <Link to='/dashboard'>
             <img src={logo} alt='Logomarca da Leme' className='h-10' />
           </Link>
-          <div className='flex gap-4 transition-300 text-3xl [&_svg]:cursor-pointer [&_svg]:hover:scale-110'>
+          <div className='flex gap-4 transition-300 text-3xl [&_svg]:hover:scale-110'>
             <button onClick={() => switchState('buscar')}>
               {buscar ? <RiCloseLargeLine /> : <LuSearch />}
             </button>
@@ -89,7 +89,7 @@ function Header ({ visivel }: { visivel: boolean }) {
             />
             <button
               type='submit'
-              className='text-3xl cursor-pointer transition-300 opacity-30 hover:opacity-100'
+              className='text-3xl transition-300 opacity-30 hover:opacity-100'
             >
               <LuSearch />
             </button>
@@ -136,7 +136,7 @@ function Header ({ visivel }: { visivel: boolean }) {
               <li>
                 <button
                   onClick={() => {}}
-                  className='hover:scale-110 cursor-pointer'
+                  className='hover:scale-110'
                 >
                   Sair
                 </button>

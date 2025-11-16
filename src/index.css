@@ -29,6 +29,10 @@
   main {
     @apply flex flex-col items-center px-6 min-h-[98vh] w-full max-w-250;
   }
+
+  button {
+    @apply cursor-pointer;
+  }
 }
 
 @layer components {
@@ -57,7 +61,7 @@
   }
 
   .botao-md {
-    @apply p-4 bg-purple-900 rounded-lg cursor-pointer transition-all duration-300 ease-linear hover:bg-purple-200;
+    @apply p-4 bg-purple-900 rounded-lg min-w-40 text-lg cursor-pointer transition-all duration-300 ease-linear hover:bg-purple-200;
   }
 
   .formulario {
@@ -68,7 +72,7 @@
 
       input,
       textarea {
-        @apply p-2 bg-white rounded focus:outline-none;
+        @apply p-2 bg-white rounded focus:outline-none w-full;
       }
     }
   }
@@ -97,5 +101,9 @@
 
   .border-gradient-purple {
     border-image: linear-gradient(to right, #a855f7, transparent) 1;
+  }
+
+  .red-line {
+    @apply border border-red-500 bg-red-200 text-red-600;
   }
 }

@@ -1,9 +1,21 @@
 import { useState } from 'react'
+import { useForm, type SubmitHandler } from 'react-hook-form'
 import { IoMdEye, IoMdEyeOff } from 'react-icons/io'
 import { Link } from 'react-router-dom'
+import type { tipoUserForm } from '../../types/tiposUsuario'
+import ErrorAlert from '../../components/ErrorAlert/ErrorAlert'
 
 function Cadastro () {
   const [mostrar, setMostrar] = useState(false)
+  const {
+    register,
+    handleSubmit,
+    formState: { errors }
+  } = useForm<tipoUserForm>()
+
+  const onSubmit: SubmitHandler<tipoUserForm> = async data => {
+    console.log(data)
+  }
 
   return (
     <main className='pt-10 gap-8'>
@@ -18,34 +30,76 @@ function Cadastro () {
         </p>
       </div>
       <form
-        onSubmit={() => {}}
+        onSubmit={handleSubmit(onSubmit)}
         className='formulario rounded-2xl bg-purple-600'
       >
         <fieldset>
-          <input type='text' id='nome' placeholder='Nome' />
-          <input type='email' id='email' placeholder='Email' />
-          <input type='text' id='username' placeholder='Nome de usuário' />
-          <input
-            type={mostrar ? 'text' : 'password'}
-            id='senha'
-            placeholder='Senha'
-          />
-          <input
-            type={mostrar ? 'text' : 'password'}
-            id='confirmarSenha'
-            placeholder='Confirmar senha'
-          />
-          <button
+          <div>
+            <input
+              type='text'
+              id='nome'
+              placeholder='Nome'
+              className={errors.nome?.message && 'red-line'}
+              {...register('nome', { required: 'Campo obrigatório' })}
+            />
+            <ErrorAlert mensagem={errors.nome?.message} />
+          </div>
+          <div>
+            <input
+              type='email'
+              id='email'
+              placeholder='Email'
+              className={errors.email?.message && 'red-line'}
+              {...register('email', { required: 'Campo obrigatório' })}
+            />
+            <ErrorAlert mensagem={errors.email?.message} />
+          </div>
+          <div>
+            <input
+              type='text'
+              id='username'
+              placeholder='Nome de usuário'
+              className={errors.username?.message && 'red-line'}
+              {...register('username', { required: 'Campo obrigatório' })}
+            />
+            <ErrorAlert mensagem={errors.username?.message} />
+          </div>
+          <div>
+            <input
+              type={mostrar ? 'text' : 'password'}
+              id='senha'
+              placeholder='Senha'
+              className={errors.senha?.message && 'red-line'}
+              {...register('senha', { required: 'Campo obrigatório' })}
+            />
+            <ErrorAlert mensagem={errors.senha?.message} />
+          </div>
+          <div>
+            <input
+              type={mostrar ? 'text' : 'password'}
+              id='confirmarSenha'
+              placeholder='Confirmar senha'
+              className={errors.confirmarSenha?.message && 'red-line'}
+              {...register('confirmarSenha', { required: 'Campo obrigatório' })}
+            />
+            <ErrorAlert mensagem={errors.confirmarSenha?.message} />
+          </div>
+          <div
             onClick={() => (mostrar ? setMostrar(false) : setMostrar(true))}
-            className='flex items-center gap-2 text-sm cursor-pointer hover:font-bold'
+            className='text-sm text-white cursor-pointer hover:font-bold [&_div]:flex [&_div]:items-center [&_div]:gap-2'
           >
             {mostrar ? (
-              <IoMdEyeOff className='text-lg' />
+              <div>
+                <IoMdEyeOff className='text-lg' />
+                Esconder senha
+              </div>
             ) : (
-              <IoMdEye className='text-lg' />
+              <div>
+                <IoMdEye className='text-lg' />
+                Mostrar senha
+              </div>
             )}
-            Mostrar senha
-          </button>
+          </div>
         </fieldset>
         <p className='text-white'>
           Ao criar uma conta você concorda com os{' '}
