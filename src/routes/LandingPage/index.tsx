@@ -75,7 +75,7 @@ function LandingPage () {
   }, [ref1Visivel, ref2Visivel, setVisivel])
 
   return (
-    <main className='gap-8'>
+    <main>
       <section className='lp-section px-4 justify-between py-12'>
         <div className='flex flex-col items-center'>
           <h1 className='titulo-1 text-5xl text-center max-w-120 leading-14'>
@@ -86,7 +86,7 @@ function LandingPage () {
           </span>
         </div>
         <button
-          onClick={() => navigate('/cadastrar')}
+          onClick={() => navigate('/criar-perfil')}
           ref={ref1}
           className='botao-md'
         >
@@ -127,7 +127,7 @@ function LandingPage () {
         </div>
         {/* <ul>
           <li>
-            <Link to='/cadastrar'>
+            <Link to='/criar-perfil'>
               <h3>Detalhe 1</h3>
               <img src='' alt='' />
               <p>
@@ -137,7 +137,7 @@ function LandingPage () {
             </Link>
           </li>
           <li>
-            <Link to='/cadastrar'>
+            <Link to='/criar-perfil'>
               <h3>Detalhe 2</h3>
               <img src='' alt='' />
               <p>
@@ -147,7 +147,7 @@ function LandingPage () {
             </Link>
           </li>
           <li>
-            <Link to='/cadastrar'>
+            <Link to='/criar-perfil'>
               <h3>Detalhe 3</h3>
               <img src='' alt='' />
               <p>
@@ -258,34 +258,26 @@ function LandingPage () {
         </div>
         <form
           onSubmit={() => setContato(true)}
-          className='flex flex-col gap-4 items-center p-8 rounded-t-2xl bg-purple-800 w-full max-w-80 fim-convexo'
+          className='formulario bg-purple-800 w-full max-w-80 fim-convexo'
         >
-          <fieldset className='flex flex-col gap-4 w-full'>
+          <fieldset>
             <input
-              className='entry'
               type='text'
-              name=''
-              id=''
+              id='idNome'
               placeholder='Seu nome'
             />
             <input
-              className='entry'
               type='text'
-              name=''
-              id=''
+              id='idEmail'
               placeholder='Seu email'
             />
             <input
-              className='entry'
               type='text'
-              name=''
-              id=''
+              id='idAssunto'
               placeholder='Assunto'
             />
             <textarea
-              className='entry'
-              name=''
-              id=''
+              id='idMensagem'
               placeholder='Do que precisa?'
             ></textarea>
           </fieldset>
@@ -300,7 +292,7 @@ function LandingPage () {
         <img src={logo} alt='Logomarca da Leme' className='h-20' />
         <p className='text-center text-xl'>Você no comando da sua carreira</p>
         <button
-          onClick={() => navigate('/cadastrar')}
+          onClick={() => navigate('/criar-perfil')}
           ref={ref2}
           className='botao-md'
         >
@@ -336,8 +328,8 @@ function LandingPage () {
                 <Link className='botao-sm' to='/entrar'>
                   Entrar
                 </Link>
-                <Link className='botao-sm' to='/cadastrar'>
-                  Cadastrar
+                <Link className='botao-sm' to='/criar-perfil'>
+                  Criar Perfil
                 </Link>
               </div>
             </div>

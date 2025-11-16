@@ -27,7 +27,7 @@
   }
 
   main {
-    @apply px-6 min-h-[98vh] max-w-250;
+    @apply flex flex-col items-center px-6 min-h-[98vh] w-full max-w-250;
   }
 }
 
@@ -60,8 +60,17 @@
     @apply p-4 bg-purple-900 rounded-lg cursor-pointer transition-all duration-300 ease-linear hover:bg-purple-200;
   }
 
-  .entry {
-    @apply p-3 bg-white rounded focus:outline-none;
+  .formulario {
+    @apply flex flex-col gap-4 items-center p-6 rounded-t-2xl w-full max-w-100;
+
+    fieldset {
+      @apply flex flex-col gap-4 w-full;
+
+      input,
+      textarea {
+        @apply p-2 bg-white rounded focus:outline-none;
+      }
+    }
   }
 
   .seta-redirect {

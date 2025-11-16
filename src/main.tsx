@@ -25,15 +25,15 @@ const router = createBrowserRouter([
     element: <App/>,
     errorElement: <ErrorPage/>,
     children: [
-      { path: '/cadastrar', element: <Cadastro/> },
+      { path: '/criar-perfil', element: <Cadastro/> },
       { path: '/contato', element: <Contato/> },
       { path: '/perguntas-frequentes', element: <Faq/> },
       { path: '/dashboard', element: <Home/> },
       { path: '/', element: <LandingPage/> },
       { path: '/entrar', element: <Login/> },
-      { path: '/trilhas/:trilha/:modulo', element: <Modulo/> },
       { path: '/sobre-nos', element: <Sobre/> },
-      { path: '/trilhas', element: <Trilhas/> }
+      { path: '/trilhas', element: <Trilhas/> },
+      { path: '/trilhas/:trilha/:modulo', element: <Modulo/> }
     ]
   }
 ])

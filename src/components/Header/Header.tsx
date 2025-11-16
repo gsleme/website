@@ -11,7 +11,7 @@ function Header ({ visivel }: { visivel: boolean }) {
   const [menu, setMenu] = useState(false)
   const locationLP = location.pathname == '/'
   const locationEntrar = location.pathname == '/entrar'
-  const locationCadastrar = location.pathname == '/cadastrar'
+  const locationCadastrar = location.pathname == '/criar-perfil'
 
   const switchState = (state: string) => {
     if (state == 'buscar') {
@@ -35,7 +35,7 @@ function Header ({ visivel }: { visivel: boolean }) {
     return (
       <header className='flex justify-center items-center py-2 z-2 w-screen bg-white'>
         <Link to='/'>
-          <img src={logo} alt='Logomarca da Leme' className='h-14' />
+          <img src={logo} alt='Logomarca da Leme' className='h-12' />
         </Link>
 
         <div
@@ -50,7 +50,7 @@ function Header ({ visivel }: { visivel: boolean }) {
             <Link to='/entrar' className='botao-sm'>
               Entrar
             </Link>
-            <Link to='/cadastrar' className='botao-sm'>
+            <Link to='/criar-perfil' className='botao-sm'>
               Cadastrar
             </Link>
           </nav>
