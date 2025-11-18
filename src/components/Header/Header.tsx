@@ -39,30 +39,32 @@ function Header ({ visivel }: { visivel: boolean }) {
         </Link>
 
         <div
-          className={`flex justify-between items-center fixed transition-full duration-400 w-screen bg-white px-6 py-2 -mt-4 ${
+          className={`flex justify-center items-center fixed transition-full duration-400 w-screen bg-white px-6 py-2 -mt-4 ${
             !visivel && locationLP ? 'translate-y-0' : '-translate-y-50'
           }`}
         >
-          <Link to='/'>
-            <img src={logo} alt='Logomarca da Leme' className='h-10' />
-          </Link>
-          <nav className='flex gap-2 items-center'>
-            <Link to='/entrar' className='botao-sm'>
-              Entrar
+          <div className='flex justify-between items-center w-full max-w-240'>
+            <Link to='/'>
+              <img src={logo} alt='Logomarca da Leme' className='h-10' />
             </Link>
-            <Link to='/criar-perfil' className='botao-sm'>
-              Cadastrar
-            </Link>
-          </nav>
+            <nav className='flex gap-2 items-center'>
+              <Link to='/entrar' className='botao-sm'>
+                Entrar
+              </Link>
+              <Link to='/criar-perfil' className='botao-sm'>
+                Cadastrar
+              </Link>
+            </nav>
+          </div>
         </div>
       </header>
     )
   }
 
   return (
-    <header className='flex flex-col items-center w-screen fixed z-1'>
+    <header className='flex flex-col items-center w-screen h-18'>
       <div className='flex flex-col justify-center items-center px-6 py-2 w-full fixed bg-white z-2'>
-        <div className='flex justify-between items-center w-full bg-white z-3'>
+        <div className='flex justify-between items-center w-full max-w-240 bg-white z-3'>
           <Link to='/dashboard'>
             <img src={logo} alt='Logomarca da Leme' className='h-10' />
           </Link>
@@ -77,11 +79,11 @@ function Header ({ visivel }: { visivel: boolean }) {
         </div>
 
         <div
-          className={`w-full transition-300 ${
+          className={`w-full max-w-240 transition-300 ${
             buscar ? 'mt-4 opacity-100 z-2' : '-mt-14 opacity-0 -z-4'
           }`}
         >
-          <form className='flex justify-between items-center bg-gray-300 rounded-full p-2 max-w-100'>
+          <form className='flex justify-between items-center bg-gray-300 rounded-full p-2 mx-auto max-w-100'>
             <input
               type='text'
               className='w-full focus:outline-none pl-4 pr-2'
@@ -97,7 +99,7 @@ function Header ({ visivel }: { visivel: boolean }) {
         </div>
 
         <div
-          className={`w-full transition-300 ${
+          className={`w-full max-w-240 transition-300 ${
             menu ? 'mt-4 opacity-100 z-2' : '-mt-70 opacity-0 -z-4'
           }`}
         >
@@ -134,10 +136,7 @@ function Header ({ visivel }: { visivel: boolean }) {
                 onClick={() => switchState('menu')}
               />
               <li>
-                <button
-                  onClick={() => {}}
-                  className='hover:scale-110'
-                >
+                <button onClick={() => {}} className='hover:scale-110'>
                   Sair
                 </button>
               </li>
@@ -148,7 +147,7 @@ function Header ({ visivel }: { visivel: boolean }) {
 
       <div
         className={`flex h-screen w-screen p-4 justify-center items-center fixed top-0 left-0 transition-full duration-400 bg-black/20 ${
-          buscar || menu ? 'opacity-100 z-1' : 'opacity-0 -z-10'
+          buscar || menu ? 'opacity-100 z-1' : 'opacity-0 -z-1'
         }`}
       ></div>
     </header>
