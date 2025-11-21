@@ -31,7 +31,7 @@ function Cadastro () {
       </div>
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className='formulario rounded-2xl bg-purple-600'
+        className='formulario bg-purple-600'
       >
         <fieldset>
           <div>

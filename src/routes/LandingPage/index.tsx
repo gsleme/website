@@ -270,7 +270,7 @@ function LandingPage () {
         </div>
         <form
           onSubmit={handleSubmit(onSubmit)}
-          className='formulario bg-purple-800 w-full max-w-80 fim-convexo'
+          className='formulario rounded-b-none bg-purple-800 w-full max-w-80 fim-convexo'
         >
           <fieldset>
             <div>
@@ -292,16 +292,6 @@ function LandingPage () {
                 {...register('email', { required: 'Campo obrigatório' })}
               />
               <ErrorAlert mensagem={errors.email?.message} />
-            </div>
-            <div>
-              <input
-                type='text'
-                id='assunto'
-                placeholder='Assunto'
-                className={errors.assunto?.message && 'red-line'}
-                {...register('assunto', { required: 'Campo obrigatório' })}
-              />
-              <ErrorAlert mensagem={errors.assunto?.message} />
             </div>
             <div>
               <textarea

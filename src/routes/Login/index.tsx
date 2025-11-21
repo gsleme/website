@@ -31,7 +31,7 @@ function Login () {
       </div>
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className='formulario rounded-2xl bg-purple-400'
+        className='formulario bg-purple-400'
       >
         <fieldset>
           <div>

@@ -65,7 +65,7 @@
   }
 
   .formulario {
-    @apply flex flex-col gap-4 items-center p-6 rounded-t-2xl w-full max-w-100;
+    @apply flex flex-col gap-4 items-center p-6 rounded-2xl w-full max-w-120;
 
     fieldset {
       @apply flex flex-col gap-4 w-full;
