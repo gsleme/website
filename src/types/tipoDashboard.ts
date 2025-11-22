@@ -1,4 +1,4 @@
-interface Usuario {
+export interface Usuario {
   id: string;
   nome: string;
   username: string;
@@ -10,7 +10,7 @@ interface Usuario {
   dataCadastro: string;
 }
 
-interface Trilha {
+export interface Trilha {
   id: string;
   titulo: string;
   descricao: string;
@@ -18,7 +18,7 @@ interface Trilha {
   xpTrilha: number;
 }
 
-interface Modulo {
+export interface Modulo {
   id: string;
   idTrilha: string;
   titulo: string;
@@ -28,7 +28,7 @@ interface Modulo {
   adaptacaoNecessaria: string;
 }
 
-interface PrevisaoIA {
+export interface PrevisaoIA {
   taxa_sucesso: number;
   categoria: 'baixa' | 'media' | 'alta';
 }
