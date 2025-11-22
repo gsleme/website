@@ -7,7 +7,7 @@ function App() {
   const [visivel, setVisivel] = useState(false)
 
   return (
-    <div className="flex flex-col items-center">
+    <div className="flex flex-col items-center overflow-x-hidden">
       <Header visivel={visivel}/>
       <Outlet context={{setVisivel}}/>
       <Footer/>
