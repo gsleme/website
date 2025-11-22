@@ -106,4 +106,8 @@
   .red-line {
     @apply border border-red-500 bg-red-200 text-red-600;
   }
+
+  .no-scrollbar {
+    @apply [scrollbar-width:none] [&::-webkit-scrollbar]:hidden;
+  }
 }
