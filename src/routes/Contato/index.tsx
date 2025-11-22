@@ -143,7 +143,7 @@ function Contato () {
                   <li key={index}>
                     <a
                       href={social.link}
-                      target='_'
+                      target="_blank" rel="noopener noreferrer"
                       className='flex justify-between items-center group p-3 border border-black rounded-xl'
                     >
                       <div className='flex items-center gap-2'>
@@ -165,7 +165,7 @@ function Contato () {
                   <li key={index}>
                     <a
                       href={social.link}
-                      target='_'
+                      target="_blank" rel="noopener noreferrer"
                       className='flex p-2 bg-purple-800 text-white rounded-full hover:scale-110 transition-300 shadow-md'
                     >
                       {<social.emoji />}

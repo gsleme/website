@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import FaqItem from '../../components/FaqItem/FaqItem'
+import { Link } from 'react-router-dom';
 
 function Faq () {
   const [aberto, setAberto] = useState(0)
@@ -45,8 +46,11 @@ function Faq () {
       <div>
         <h1 className='titulo-1 text-5xl'>Perguntas frequentes</h1>
         <p className='w-4/5 mt-4'>
-          Ficou com alguma dúvida? Veja se já não resolvemos ela por aqui.
+          Ficou com alguma dúvida? Veja se já não resolvemos ela por aqui. Caso seja algo específico, fale com a gente no botão abaixo!
         </p>
+        <Link to='/contato' className='botao-md flex w-fit my-4'>
+        Fale com a Leme
+        </Link>
       </div>
       <div className='w-full max-w-120 p-4 md:p-8 rounded-xl border border-gray-600 h-120 '>
         <ul className='flex flex-col gap-2 pr-4 overflow-y-scroll h-full'>
