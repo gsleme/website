@@ -1,7 +1,14 @@
+import { useNavigate } from 'react-router-dom';
 import Header from '../../components/Header/Header';
 import Footer from '../../components/Footer/Footer';
 
 function ErrorPage() {
+  const navigate = useNavigate();
+
+  const handleGoHome = () => {
+    navigate('/');
+  };
+
   return (
     <div className="flex flex-col min-h-screen">
       <Header visivel={true} />
@@ -12,6 +19,12 @@ function ErrorPage() {
           <p className="text-lg text-slate-600 mb-8 max-w-lg">
             Que pena! Nenhuma página com esse endereço... Por favor, verifique se digitou o endereço corretamente.
           </p>
+          <button
+            className="px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition duration-300"
+            onClick={handleGoHome}
+          >
+            Ir para a Página Inicial
+          </button>
         </section>
       </main>
       <Footer />
