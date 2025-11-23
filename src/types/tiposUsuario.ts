@@ -16,3 +16,15 @@ export type tipoTokenInfo = {
     tempoPlataformaDias: number;
     exp: number;
 }
+
+export type UsuarioDashboard ={
+  id: string;
+  nome: string;
+  username: string;
+  email: string;
+  area: string;
+  acessibilidade: string;
+  modulosConcluidos: number;
+  xpTotal: number;
+  dataCadastro: string;
+}

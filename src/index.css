@@ -35,10 +35,6 @@
     @apply font-roboto;
   }
 
-  main {
-    @apply flex flex-col items-center px-6 min-h-[86vh] w-full max-w-250;
-  }
-
   button {
     @apply cursor-pointer;
   }

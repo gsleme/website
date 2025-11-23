@@ -1,173 +1,157 @@
-import type { Usuario,Trilha,Modulo,PrevisaoIA } from '../../types/tipoDashboard'
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import './styles.css';
-import Footer from '../../components/Footer/Footer';
-import Header from '../../components/Header/Header';
-
-// ============================================
-// CONFIGURAÇÕES DE API
-// ============================================
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../contexts/AuthContext';
+import type { Sugestao } from '../../types/tipoDashboard'
+import type { ProgressoTrilha } from '../../types/tipoDashboard'
+import type { Trilha } from '../../types/tipoTrilhas'
+import type { Modulo } from '../../types/tipoTrilhas'
 
 const BACKEND_API = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8080';
-const FLASK_API = import.meta.env.VITE_FLASK_API || 'https://leme-ia.onrender.com';
 
 // ============================================
-// COMPONENTE PRINCIPAL
+// COMPONENTE
 // ============================================
 
 export default function Home() {
   const navigate = useNavigate();
+  const { usuario } = useAuth();
   
   // Estados
-  const [usuario, setUsuario] = useState<Usuario | null>(null);
-  const [trilhaAtual, setTrilhaAtual] = useState<Trilha | null>(null);
-  const [modulosTrilha, setModulosTrilha] = useState<Modulo[]>([]);
-  const [progressosConcluidos, setProgressosConcluidos] = useState<string[]>([]);
-  const [previsao, setPrevisao] = useState<PrevisaoIA | null>(null);
+  const [trilha, setTrilha] = useState<Trilha | null>(null);
+  const [modulos, setModulos] = useState<Modulo[]>([]);
+  const [progresso, setProgresso] = useState<ProgressoTrilha | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [flaskOnline, setFlaskOnline] = useState(false);
+
+  useEffect(() => {
+    if (usuario) {
+      carregarDashboard();
+    }
+  }, [usuario]);
 
   // ============================================
   // CARREGAR DASHBOARD
   // ============================================
 
-  useEffect(() => {
-    carregarDashboard();
-  }, []);
-
   const carregarDashboard = async () => {
+    if (!usuario) return;
+
     setLoading(true);
     setError(null);
 
     try {
-      // 1. EXTRAIR USER ID DO JWT
-      const token = localStorage.getItem('authToken');
-      if (!token) {
-        navigate('/entrar');
-        return;
-      }
+      const token = localStorage.getItem('token');
+      if (!token) throw new Error('Token não encontrado');
 
-      const payload = JSON.parse(atob(token.split('.')[1]));
-      const userId = payload.sub || payload.userId || payload.id;
+      // ============================================
+      // 1. CRIAR/BUSCAR SUGESTÃO (retorna idModulo)
+      // ============================================
+      const resSugestao = await fetch(
+        `${BACKEND_API}/sugestoes/${usuario.id}`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            area: usuario.area,
+            acessibilidade: usuario.acessibilidade,
+            modulos_concluidos: usuario.modulosConcluidos,
+            tempo_plataforma_dias: usuario.tempoPlataformaDias
+          })
+        }
+      );
+
+      if (!resSugestao.ok) throw new Error('Erro ao criar sugestão');
       
-      console.log('🔑 User ID extraído:', userId);
+      const dadosSugestao: Sugestao = await resSugestao.json();
 
-      // 2. BUSCAR DADOS DO USUÁRIO (Backend Java)
-      console.log('📡 Buscando dados do usuário...');
-      const resUsuario = await fetch(`${BACKEND_API}/usuario/${userId}`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
+      // ============================================
+      // 2. BUSCAR MÓDULO SUGERIDO
+      // ============================================
+      const resModulo = await fetch(
+        `${BACKEND_API}/modulos/${dadosSugestao.idModulo}`,
+        {
+          headers: { 'Authorization': `Bearer ${token}` }
+        }
+      );
+
+      if (!resModulo.ok) throw new Error('Módulo não encontrado');
       
-      if (!resUsuario.ok) {
-        throw new Error('Erro ao buscar usuário');
-      }
-      
-      const dadosUsuario: Usuario = await resUsuario.json();
-      setUsuario(dadosUsuario);
-      console.log('✅ Usuário carregado:', dadosUsuario.nome);
+      const moduloSugerido: Modulo = await resModulo.json();
 
-      // 3. CALCULAR DIAS NA PLATAFORMA
-      const diasPlataforma = calcularDiasDesde(dadosUsuario.dataCadastro);
-      console.log('📅 Dias na plataforma:', diasPlataforma);
+      // ============================================
+      // 3. BUSCAR TRILHA (usando idTrilha do módulo)
+      // ============================================
+      const resTrilha = await fetch(
+        `${BACKEND_API}/trilhas/${moduloSugerido.idTrilha}`,
+        {
+          headers: { 'Authorization': `Bearer ${token}` }
+        }
+      );
 
-      // 4. VERIFICAR SAÚDE DA API FLASK
-      try {
-        const healthRes = await fetch(`${FLASK_API}/health`);
-        setFlaskOnline(healthRes.ok);
-      } catch {
-        setFlaskOnline(false);
-      }
-
-      // 5. BUSCAR SUGESTÃO DA IA (Flask Render)
-      console.log('🤖 Buscando sugestão da IA...');
-      const resSugestao = await fetch(`${FLASK_API}/suggest_trilha`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          area: dadosUsuario.area,
-          acessibilidade: dadosUsuario.acessibilidade,
-          modulos_concluidos: dadosUsuario.modulosConcluidos,
-          tempo_plataforma_dias: diasPlataforma
-        })
-      });
-
-      if (!resSugestao.ok) {
-        throw new Error('Erro ao buscar sugestão da IA');
-      }
-      
-      const { id_trilha } = await resSugestao.json();
-      console.log('✅ Trilha sugerida:', id_trilha);
-
-      // 6. BUSCAR DETALHES DA TRILHA (Backend Java)
-      console.log('📚 Buscando detalhes da trilha...');
-      const resTrilha = await fetch(`${BACKEND_API}/trilhas/${id_trilha}`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-
-      if (!resTrilha.ok) {
-        throw new Error(`Trilha ${id_trilha} não encontrada no banco`);
-      }
+      if (!resTrilha.ok) throw new Error('Trilha não encontrada');
       
       const dadosTrilha: Trilha = await resTrilha.json();
-      setTrilhaAtual(dadosTrilha);
-      console.log('✅ Trilha carregada:', dadosTrilha.titulo);
+      setTrilha(dadosTrilha);
 
-      // 7. BUSCAR MÓDULOS DA TRILHA
-      console.log('📝 Buscando módulos da trilha...');
-      const resModulos = await fetch(`${BACKEND_API}/modulos?trilha=${id_trilha}`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
+      // ============================================
+      // 4. BUSCAR TODOS MÓDULOS DA TRILHA
+      // ============================================
 
-      if (!resModulos.ok) {
-        throw new Error('Erro ao buscar módulos');
-      }
+      const resModulos = await fetch(
+        `${BACKEND_API}/modulos?trilha=${moduloSugerido.idTrilha}`,
+        {
+          headers: { 'Authorization': `Bearer ${token}` }
+        }
+      );
+
+      if (!resModulos.ok) throw new Error('Erro ao buscar módulos');
       
-      const modulos: Modulo[] = await resModulos.json();
-      setModulosTrilha(modulos);
-      console.log('✅ Módulos carregados:', modulos.length);
+      const todosModulos: Modulo[] = await resModulos.json();
+      setModulos(todosModulos);
 
-      // 8. BUSCAR PROGRESSOS DO USUÁRIO
-      console.log('⏱️ Buscando progressos...');
-      const resProgressos = await fetch(`${BACKEND_API}/progressos?usuario=${userId}`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
+      // ============================================
+      // 5. CALCULAR PROGRESSO
+      // ============================================
+      const resProgresso = await fetch(
+        `${BACKEND_API}/progressos/trilha/${moduloSugerido.idTrilha}/usuario/${usuario.id}`,
+        {
+          headers: { 'Authorization': `Bearer ${token}` }
+        }
+      );
 
-      if (!resProgressos.ok) {
-        throw new Error('Erro ao buscar progressos');
-      }
+      if (!resProgresso.ok) throw new Error('Erro ao calcular progresso');
       
-      const progressos = await resProgressos.json();
-      const idsModulosConcluidos = progressos.map((p: any) => p.idModulo);
-      setProgressosConcluidos(idsModulosConcluidos);
-      console.log('✅ Progressos carregados:', idsModulosConcluidos.length);
+      const dadosProgresso: ProgressoTrilha = await resProgresso.json();
+      setProgresso(dadosProgresso);
+      console.log('✅ Progresso:', `${dadosProgresso.percentual}%`);
 
-      // 9. BUSCAR PREVISÃO DE SUCESSO (Flask Render)
-      console.log('🎯 Buscando previsão de sucesso...');
-      const resPrevisao = await fetch(`${FLASK_API}/predict_sucesso`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          area: dadosUsuario.area,
-          acessibilidade: dadosUsuario.acessibilidade,
-          modulos_concluidos: dadosUsuario.modulosConcluidos,
-          tempo_plataforma_dias: diasPlataforma
-        })
-      });
-
-      if (!resPrevisao.ok) {
-        throw new Error('Erro ao buscar previsão');
-      }
+      // ============================================
+      // 6. CRIAR PREVISÃO (204 No Content)
+      // ============================================
       
-      const dadosPrevisao: PrevisaoIA = await resPrevisao.json();
-      setPrevisao(dadosPrevisao);
-      console.log('✅ Previsão carregada:', dadosPrevisao.taxa_sucesso);
-
-      console.log('🎉 Dashboard carregado com sucesso!');
+      console.log('🎯 Salvando previsão...');
+      await fetch(
+        `${BACKEND_API}/previsoes/${usuario.id}`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            area: usuario.area,
+            acessibilidade: usuario.acessibilidade,
+            modulos_concluidos: usuario.modulosConcluidos,
+            tempo_plataforma_dias: usuario.tempoPlataformaDias
+          })
+        }
+      );
 
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Erro ao carregar dashboard';
+      const message = err instanceof Error ? err.message : 'Erro desconhecido';
       setError(message);
       console.error('❌ Erro:', err);
     } finally {
@@ -178,22 +162,6 @@ export default function Home() {
   // ============================================
   // FUNÇÕES AUXILIARES
   // ============================================
-
-  const calcularDiasDesde = (dataCadastro: string): number => {
-    const hoje = new Date();
-    const cadastro = new Date(dataCadastro);
-    const diffTime = Math.abs(hoje.getTime() - cadastro.getTime());
-    return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-  };
-
-  const calcularProgresso = (): number => {
-    if (modulosTrilha.length === 0) return 0;
-    return Math.round((progressosConcluidos.length / modulosTrilha.length) * 100);
-  };
-
-  const obterProximoModulo = (): Modulo | null => {
-    return modulosTrilha.find(m => !progressosConcluidos.includes(m.id)) || null;
-  };
 
   const getTipoIcon = (tipo: string): string => {
     const icons: Record<string, string> = {
@@ -206,193 +174,228 @@ export default function Home() {
     return icons[tipo.toLowerCase()] || '📚';
   };
 
+  const proximoModulo = modulos.find(
+    m => !progresso?.idsModulosConcluidos.includes(m.id)
+  ) || null;
+
+  const modulosRecomendados = modulos
+    .filter(m => !progresso?.idsModulosConcluidos.includes(m.id))
+    .slice(0, 5);
+
   // ============================================
-  // RENDERIZAÇÃO - LOADING
+  // LOADING STATE
   // ============================================
 
   if (loading) {
     return (
-      <>
-        <Header visivel={false} />
-        <main className="dashboard-container">
-          <div className="loading-container">
-            <div className="spinner"></div>
-            <p>Carregando seu dashboard personalizado...</p>
-            {!flaskOnline && (
-              <p className="loading-hint">
-                ⏳ API de IA está inicializando (pode levar ~30s)
-              </p>
-            )}
+        <main className="min-h-screen bg-gray-50 px-4 py-8">
+          <div className="max-w-7xl mx-auto">
+            <div className="flex flex-col items-center justify-center py-20">
+              <div className="w-16 h-16 border-4 border-purple-600 border-t-transparent rounded-full animate-spin mb-4" />
+              <p className="text-gray-600 text-lg">Carregando seu dashboard personalizado...</p>
+              <p className="text-gray-400 text-sm mt-2">Aguarde enquanto buscamos sua trilha ideal</p>
+            </div>
           </div>
         </main>
-        <Footer />
-      </>
     );
   }
 
   // ============================================
-  // RENDERIZAÇÃO - ERRO
+  // ERROR STATE
   // ============================================
 
   if (error) {
     return (
-      <>
-        <Header visivel={false} />
-        <main className="dashboard-container">
-          <div className="error-container">
-            <h2>❌ Erro ao carregar dashboard</h2>
-            <p>{error}</p>
-            <button onClick={carregarDashboard} className="btn-retry">
-              Tentar Novamente
-            </button>
+        <main className="min-h-screen bg-gray-50 px-4 py-8">
+          <div className="max-w-7xl mx-auto">
+            <div className="flex flex-col items-center justify-center py-20">
+              <div className="bg-red-50 border border-red-200 rounded-lg p-6 max-w-md w-full">
+                <h2 className="text-xl font-bold text-red-800 mb-2">❌ Erro ao carregar dashboard</h2>
+                <p className="text-red-600 mb-4">{error}</p>
+                <button
+                  onClick={carregarDashboard}
+                  className="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-lg transition"
+                >
+                  Tentar Novamente
+                </button>
+              </div>
+            </div>
           </div>
         </main>
-        <Footer />
-      </>
     );
   }
 
   // ============================================
-  // RENDERIZAÇÃO - DASHBOARD
+  // DASHBOARD
   // ============================================
 
-  const progresso = calcularProgresso();
-  const proximoModulo = obterProximoModulo();
-  const modulosRestantes = modulosTrilha.length - progressosConcluidos.length;
-
+  if (usuario){
   return (
-    <>
-      <Header visivel={false} />
-      
-      <main className="dashboard-container">
-        <h1 className="dashboard-title">DASHBOARD</h1>
-
-        {/* CARD DA TRILHA ATUAL */}
-        {trilhaAtual && usuario && (
-          <div className="trilha-card">
-            <p className="trilha-subtitle">Continue de onde parou</p>
-            <h2 className="trilha-etapa">
-              ETAPA {String(progressosConcluidos.length + 1).padStart(2, '0')}
-            </h2>
-            
-            {/* Barra de Progresso */}
-            <div className="progress-bar-container">
-              <div 
-                className="progress-bar-fill"
-                style={{ width: `${progresso}%` }}
-              ></div>
-            </div>
-            
-            <p className="trilha-nome">{trilhaAtual.titulo}</p>
-            <p className="trilha-descricao">{trilhaAtual.descricao}</p>
-            
-            {/* Estatísticas */}
-            <div className="trilha-stats">
-              <div className="stat-item">
-                <span className="stat-label">Progresso</span>
-                <span className="stat-value">{progresso}%</span>
-              </div>
-              <div className="stat-item">
-                <span className="stat-label">Módulos Restantes</span>
-                <span className="stat-value">{modulosRestantes}</span>
-              </div>
-              <div className="stat-item">
-                <span className="stat-label">XP Total</span>
-                <span className="stat-value">{usuario.xpTotal}</span>
-              </div>
-            </div>
-
-            {/* Previsão de Sucesso da IA */}
-            {previsao && (
-              <div className="previsao-sucesso">
-                <div className="previsao-badge">
-                  <span className="previsao-label">Taxa de Sucesso Prevista (IA)</span>
-                  <span className={`previsao-valor categoria-${previsao.categoria}`}>
-                    {(previsao.taxa_sucesso * 100).toFixed(0)}%
-                  </span>
-                </div>
-                <span className={`categoria-tag categoria-${previsao.categoria}`}>
-                  {previsao.categoria.toUpperCase()}
-                </span>
-              </div>
-            )}
-
-            <button 
-              className="btn-continuar" 
-              onClick={() => proximoModulo && navigate(`/modulos/${proximoModulo.id}`)}
-              disabled={!proximoModulo}
-            >
-              {proximoModulo ? 'Continuar Trilha →' : '✅ Trilha Concluída!'}
-            </button>
-          </div>
-        )}
-
-        {/* PRÓXIMO MÓDULO EM DESTAQUE */}
-        {proximoModulo && (
-          <section className="proximo-modulo-section">
-            <h2 className="section-title">📚 Próximo Módulo</h2>
-            <div className="modulo-card-destaque">
-              <div className="modulo-icon">
-                {getTipoIcon(proximoModulo.tipo)}
-              </div>
-              <div className="modulo-content">
-                <h3>{proximoModulo.titulo}</h3>
-                <p className="modulo-descricao">{proximoModulo.descricao}</p>
-                <div className="modulo-meta">
-                  <span className="modulo-tipo">{proximoModulo.tipo}</span>
-                  <span className="modulo-xp">+{proximoModulo.xpRecompensa} XP</span>
-                  {proximoModulo.adaptacaoNecessaria !== 'nenhuma' && (
-                    <span className="modulo-adaptacao">
-                      ♿ {proximoModulo.adaptacaoNecessaria}
-                    </span>
-                  )}
-                </div>
-              </div>
-              <button 
-                className="btn-iniciar"
-                onClick={() => navigate(`/modulos/${proximoModulo.id}`)}
-              >
-                Iniciar
-              </button>
-            </div>
-          </section>
-        )}
-
-        {/* SEÇÃO DE RECOMENDADOS */}
-        <section className="recomendacoes-section">
-          <h2 className="section-title">Recomendados</h2>
-          <div className="recomendacoes-grid">
-            {modulosTrilha
-              .filter(m => !progressosConcluidos.includes(m.id))
-              .slice(1, 4) // Pula o primeiro (já mostrado acima)
-              .map((modulo) => (
-                <div 
-                  key={modulo.id} 
-                  className="recomendacao-card"
-                  onClick={() => navigate(`/modulos/${modulo.id}`)}
-                >
-                  <div className="recomendacao-icon">
-                    {getTipoIcon(modulo.tipo)}
-                  </div>
-                  <div className="recomendacao-content">
-                    <h3>{modulo.titulo}</h3>
-                    <p className="recomendacao-tipo">{modulo.tipo}</p>
-                    <span className="recomendacao-status">Não iniciado</span>
-                  </div>
-                </div>
-              ))}
-          </div>
+      <main className="min-h-screen bg-gray-50 px-4 py-8">
+        <div className="max-w-7xl mx-auto">
           
-          {/* Mensagem se não houver recomendações */}
-          {modulosTrilha.filter(m => !progressosConcluidos.includes(m.id)).length <= 1 && (
-            <div className="recomendacoes-empty">
-              <p>🎉 Parabéns! Você está quase concluindo esta trilha!</p>
+          {/* HEADER */}
+          <div className="flex justify-between items-center mb-8">
+            <h1 className="text-4xl font-black text-gray-900 tracking-tight">DASHBOARD</h1>
+            <div className="flex flex-col items-end gap-1">
+              <span className="text-gray-600">Olá! 👋</span>
+              <span className="text-xl font-bold text-purple-600">{usuario.modulosConcluidos} módulos</span>
+            </div>
+          </div>
+
+          {/* CARD TRILHA ATUAL */}
+          {trilha && progresso && (
+            <div className="bg-gradient-to-br from-purple-600 via-purple-700 to-pink-600 rounded-2xl p-8 mb-8 shadow-2xl text-white relative overflow-hidden">
+              {/* Background decorativo */}
+              <div className="absolute inset-0 opacity-10">
+                <div className="absolute top-0 left-0 w-96 h-96 bg-white rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2" />
+                <div className="absolute bottom-0 right-0 w-96 h-96 bg-white rounded-full blur-3xl translate-x-1/2 translate-y-1/2" />
+              </div>
+
+              <div className="relative z-10">
+                <p className="text-sm uppercase tracking-wider opacity-90 mb-2">Continue de onde parou</p>
+                <h2 className="text-4xl font-black mb-6 tracking-tight">
+                  ETAPA {String(progresso.modulosConcluidos + 1).padStart(2, '0')}
+                </h2>
+                
+                {/* Barra de Progresso */}
+                <div className="w-full bg-white/20 rounded-full h-4 mb-6 overflow-hidden backdrop-blur-sm">
+                  <div 
+                    className="bg-gradient-to-r from-green-400 to-emerald-500 h-full rounded-full transition-all duration-700 ease-out shadow-lg"
+                    style={{ width: `${progresso.percentual}%` }}
+                  />
+                </div>
+                
+                <h3 className="text-2xl font-bold mb-2">{trilha.titulo}</h3>
+                <p className="text-white/90 mb-6 leading-relaxed">{trilha.descricao}</p>
+                
+                {/* Estatísticas */}
+                <div className="grid grid-cols-3 gap-4 mb-6">
+                  <div className="bg-white/10 backdrop-blur-md rounded-xl p-4 text-center">
+                    <p className="text-xs uppercase tracking-wider opacity-80 mb-1">Progresso</p>
+                    <p className="text-3xl font-black">{progresso.percentual}%</p>
+                  </div>
+                  <div className="bg-white/10 backdrop-blur-md rounded-xl p-4 text-center">
+                    <p className="text-xs uppercase tracking-wider opacity-80 mb-1">Restantes</p>
+                    <p className="text-3xl font-black">{progresso.totalModulos - progresso.modulosConcluidos}</p>
+                  </div>
+                  <div className="bg-white/10 backdrop-blur-md rounded-xl p-4 text-center">
+                    <p className="text-xs uppercase tracking-wider opacity-80 mb-1">Total</p>
+                    <p className="text-3xl font-black">{progresso.totalModulos}</p>
+                  </div>
+                </div>
+
+                {/* Botão */}
+                {proximoModulo ? (
+                  <Link to = {`/trilhas/${proximoModulo.idTrilha}/${proximoModulo.titulo}`}
+                    className="w-full bg-white text-purple-700 font-bold py-4 px-6 rounded-xl hover:bg-gray-50 transition transform hover:scale-105 shadow-xl"
+                  >
+                    Continuar Trilha →
+                  </Link>
+                ) : (
+                  <button
+                    disabled
+                    className="w-full bg-white/20 text-white font-bold py-4 px-6 rounded-xl cursor-not-allowed"
+                  >
+                    ✅ Trilha Concluída!
+                  </button>
+                )}
+              </div>
             </div>
           )}
-        </section>
-      </main>
 
-      <Footer />
-    </>
+          {/* RECOMENDADOS */}
+          <section className="mb-8">
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">📚 Recomendados para Você</h2>
+            
+            {modulosRecomendados.length > 0 ? (
+              <div className="space-y-4">
+                {modulosRecomendados.map((modulo, index) => (
+                  <Link
+                    key={index}
+                    to={`/trilhas/${modulo.idTrilha}/${modulo.titulo}`}
+                    className="bg-white rounded-xl p-6 shadow-sm hover:shadow-xl transition cursor-pointer flex items-center gap-6 group block" 
+                   >
+                    {/* Ícone */}
+                    <div className="w-20 h-20 flex-shrink-0 bg-gradient-to-br from-gray-100 to-gray-200 rounded-2xl flex items-center justify-center text-4xl group-hover:scale-110 transition">
+                      {getTipoIcon(modulo.tipo)}
+                    </div>
+                    
+                    {/* Conteúdo */}
+                    <div className="flex-1">
+                      <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-purple-600 transition">
+                        {modulo.titulo}
+                      </h3>
+                      <p className="text-gray-600 text-sm mb-3 line-clamp-2">
+                        {modulo.descricao}
+                      </p>
+                      
+                      {/* Badges */}
+                      <div className="flex gap-2 flex-wrap">
+                        <span className="px-3 py-1 bg-indigo-100 text-indigo-700 text-xs font-semibold rounded-full">
+                          {modulo.tipo}
+                        </span>
+                        <span className="px-3 py-1 bg-yellow-100 text-yellow-700 text-xs font-semibold rounded-full">
+                          +{modulo.xpRecompensa} XP
+                        </span>
+                        {modulo.adaptacaoNecessaria !== 'nenhuma' && (
+                          <span className="px-3 py-1 bg-blue-100 text-blue-700 text-xs font-semibold rounded-full">
+                            ♿ {modulo.adaptacaoNecessaria}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    
+                    {/* Indicador */}
+                    <div className="w-12 h-12 flex-shrink-0 bg-gray-100 rounded-full flex items-center justify-center text-xl group-hover:bg-purple-100 transition">
+                      🔗
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            ) : (
+              <div className="bg-gray-100 rounded-xl p-12 text-center">
+                <p className="text-gray-600 text-lg mb-4">🎉 Parabéns! Você concluiu todos os módulos!</p>
+                <button
+                  onClick={() => navigate('/trilhas')}
+                  className="bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 px-6 rounded-lg transition"
+                >
+                  Explorar Novas Trilhas
+                </button>
+              </div>
+            )}
+          </section>
+
+          {/* INFO CARDS */}
+          <section className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="bg-white rounded-xl p-6 shadow-sm flex items-center gap-4">
+              <div className="text-4xl">🎯</div>
+              <div>
+                <p className="text-sm text-gray-500 mb-1">Sua Área</p>
+                <p className="text-lg font-bold text-gray-900">{usuario.area}</p>
+              </div>
+            </div>
+            
+            <div className="bg-white rounded-xl p-6 shadow-sm flex items-center gap-4">
+              <div className="text-4xl">♿</div>
+              <div>
+                <p className="text-sm text-gray-500 mb-1">Acessibilidade</p>
+                <p className="text-lg font-bold text-gray-900">
+                  {usuario.acessibilidade === 'nenhuma' ? 'Padrão' : usuario.acessibilidade}
+                </p>
+              </div>
+            </div>
+            
+            <div className="bg-white rounded-xl p-6 shadow-sm flex items-center gap-4">
+              <div className="text-4xl">📊</div>
+              <div>
+                <p className="text-sm text-gray-500 mb-1">Dias na Plataforma</p>
+                <p className="text-lg font-bold text-gray-900">{usuario.tempoPlataformaDias} dias</p>
+              </div>
+            </div>
+          </section>
+        </div>
+      </main>
   );
+}
 }

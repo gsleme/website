@@ -86,5 +86,5 @@ export const useAuth = (): tipoAuthContext => {
     throw new Error('useAuth precisa estar dentro de um AuthProvider')
   }
 
-  return context
+  return context
 }
