@@ -5,16 +5,21 @@ import { useState } from 'react'
 import { RiCloseLargeLine } from 'react-icons/ri'
 import NavItem from '../NavItem/NavItem'
 import { useTheme } from '../../contexts/ThemeContext'
-import { FaMoon, FaRegSun } from 'react-icons/fa'
+import { FaMoon } from 'react-icons/fa'
+import { useAuth } from '../../contexts/AuthContext'
+import { FaSun } from 'react-icons/fa6'
 
 function Header ({ visivel }: { visivel: boolean }) {
   const location = useLocation()
   const [buscar, setBuscar] = useState(false)
   const [menu, setMenu] = useState(false)
+  const [sair, setSair] = useState(false)
+
   const locationLP = location.pathname == '/'
   const locationEntrar = location.pathname == '/entrar'
   const locationCadastrar = location.pathname == '/criar-perfil'
   const { tema, setTema } = useTheme()
+  const { usuario, logout } = useAuth()
 
   const switchState = (state: string) => {
     if (state == 'buscar') {
@@ -57,10 +62,41 @@ function Header ({ visivel }: { visivel: boolean }) {
               <Link to='/criar-perfil' className='botao-sm'>
                 Cadastrar
               </Link>
+              <button
+                className='p-3 bg-purple-800 rounded-full text-white'
+                onClick={() => setTema(tema == 'light' ? 'dark' : 'light')}
+              >
+                {tema == 'light' ? <FaSun /> : <FaMoon />}
+              </button>
             </nav>
-            <button onClick={() => setTema(tema == 'light' ? 'dark' : 'light')}>
-              {tema == 'light' ? <FaRegSun /> : <FaMoon />}
-            </button>
+          </div>
+        </div>
+      </header>
+    )
+  }
+
+  if (!usuario && !locationLP && !locationEntrar && !locationCadastrar) {
+    return (
+      <header className='flex justify-center z-2 w-screen h-20 pb-4'>
+        <div className='flex justify-center items-center fixed transition-full duration-400 w-screen bg-white px-6 py-2'>
+          <div className='flex justify-between items-center w-full max-w-240'>
+            <Link to='/'>
+              <img src={logo} alt='Logomarca da Leme' className='h-10' />
+            </Link>
+            <nav className='flex gap-2 items-center'>
+              <Link to='/entrar' className='botao-sm'>
+                Entrar
+              </Link>
+              <Link to='/criar-perfil' className='botao-sm'>
+                Cadastrar
+              </Link>
+              <button
+                className='p-3 bg-purple-800 rounded-full text-white'
+                onClick={() => setTema(tema == 'light' ? 'dark' : 'light')}
+              >
+                {tema == 'light' ? <FaSun /> : <FaMoon />}
+              </button>
+            </nav>
           </div>
         </div>
       </header>
@@ -142,7 +178,10 @@ function Header ({ visivel }: { visivel: boolean }) {
                 onClick={() => switchState('menu')}
               />
               <li>
-                <button onClick={() => {}} className='hover:scale-110'>
+                <button
+                  onClick={() => setSair(true)}
+                  className='hover:scale-110'
+                >
                   Sair
                 </button>
               </li>
@@ -156,6 +195,28 @@ function Header ({ visivel }: { visivel: boolean }) {
           buscar || menu ? 'opacity-100 z-1' : 'opacity-0 -z-1'
         }`}
       ></div>
+
+      <div
+        className={`fixed inset-0 bg-black/30 transition-[opacity,z] duration-1000 ease-in flex items-center justify-center p-4 ${
+          sair ? 'z-50 visible' : '-z-50 invisible'
+        }`}
+      >
+        <div
+          className={`bg-white p-4 rounded-lg shadow-md text-center z-50 transition-transform duration-300 ease-in ${
+            sair ? 'translate-y-0' : 'translate-y-[150vh]'
+          }`}
+        >
+          <h3 className='titulo-1 my-4'>Tem certeza que quer sair?</h3>
+          <div className='flex justify-center gap-4'>
+            <button onClick={() => logout()} className='botao-sm'>
+              Sair
+            </button>
+            <button onClick={() => setSair(false)} className='botao-sm'>
+              Voltar
+            </button>
+          </div>
+        </div>
+      </div>
     </header>
   )
 }

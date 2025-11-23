@@ -4,17 +4,58 @@ import { IoMdEye, IoMdEyeOff } from 'react-icons/io'
 import { Link } from 'react-router-dom'
 import type { tipoUsuarioForm } from '../../types/tiposUsuario'
 import ErrorAlert from '../../components/ErrorAlert/ErrorAlert'
+import { useAuth } from '../../contexts/AuthContext'
+const API_USUARIOS = import.meta.env.VITE_API_BASE_USUARIOS
 
 function Login () {
   const [mostrar, setMostrar] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const { login } = useAuth()
   const {
     register,
     handleSubmit,
-    formState: { errors }
+    formState: { errors },
+    setError
   } = useForm<tipoUsuarioForm>()
 
   const onSubmit: SubmitHandler<tipoUsuarioForm> = async data => {
-    console.log(data)
+    try {
+      setLoading(true)
+
+      const response = await fetch(`${API_USUARIOS}/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: data.email,
+          senha: data.senha
+        })
+      })
+
+      if (!response.ok) {
+        if (response.status == 404) {
+          setError('email', { type: 'manual', message: 'Email não cadastrado' })
+
+        } else if (response.status == 401) {
+          setError('senha', { type: 'manual', message: 'Senha incorreta' })
+
+        } else {
+          throw new Error()
+        }
+      }
+
+      const token:{token: string} = await response.json()
+
+      login(token.token)
+      alert('Boas vindas a Leme!')
+
+    } catch (erro) {
+      if (erro instanceof Error) {
+        alert('Erro inesperado... Tente novamente mais tarde')
+      }
+
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (

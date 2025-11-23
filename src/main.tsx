@@ -20,6 +20,7 @@ import Sobre from './routes/Sobre/index.tsx'
 import Trilhas from './routes/Trilhas/index.tsx'
 import { AuthProvider } from './contexts/AuthContext.tsx'
 import { ThemeProvider } from './contexts/ThemeContext.tsx'
+import AuthRoute from './contexts/AuthRoute.tsx'
 
 const router = createBrowserRouter([
   {
@@ -27,15 +28,50 @@ const router = createBrowserRouter([
     element: <App />,
     errorElement: <ErrorPage />,
     children: [
-      { path: '/criar-perfil', element: <Cadastro /> },
+      {
+        path: '/criar-perfil',
+        element: (
+          <AuthRoute publico>
+            <Cadastro />
+          </AuthRoute>
+        )
+      },
       { path: '/contato', element: <Contato /> },
       { path: '/perguntas-frequentes', element: <Faq /> },
-      { path: '/dashboard', element: <Home /> },
+      {
+        path: '/dashboard',
+        element: (
+          <AuthRoute publico={false}>
+            <Home />
+          </AuthRoute>
+        )
+      },
       { path: '/', element: <LandingPage /> },
-      { path: '/entrar', element: <Login /> },
+      {
+        path: '/entrar',
+        element: (
+          <AuthRoute publico>
+            <Login />
+          </AuthRoute>
+        )
+      },
       { path: '/sobre-nos', element: <Sobre /> },
-      { path: '/trilhas', element: <Trilhas /> },
-      { path: '/trilhas/:trilha/:modulo', element: <Modulo /> }
+      {
+        path: '/trilhas',
+        element: (
+          <AuthRoute publico={false}>
+            <Trilhas />
+          </AuthRoute>
+        )
+      },
+      {
+        path: '/trilhas/:trilha/:modulo',
+        element: (
+          <AuthRoute publico={false}>
+            <Modulo />
+          </AuthRoute>
+        )
+      }
     ]
   }
 ])

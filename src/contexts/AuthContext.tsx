@@ -27,9 +27,10 @@ export function AuthProvider ({ children }: { children: ReactNode }) {
           setToken(token)
           setUsuario({
             id: decoded.id,
-            nome: decoded.nome,
-            username: decoded.username,
-            email: decoded.email
+            area: decoded.area,
+            acessibilidade: decoded.acessibilidade,
+            modulosConcluidos: decoded.modulosConcluidos,
+            tempoPlataformaDias: decoded.tempoPlataformaDias
           } as tipoTokenInfo)
         } else {
           localStorage.removeItem('token')
@@ -51,9 +52,10 @@ export function AuthProvider ({ children }: { children: ReactNode }) {
       setToken(token)
       setUsuario({
         id: decoded.id,
-        nome: decoded.nome,
-        username: decoded.username,
-        email: decoded.email
+        area: decoded.area,
+        acessibilidade: decoded.acessibilidade,
+        modulosConcluidos: decoded.modulosConcluidos,
+        tempoPlataformaDias: decoded.tempoPlataformaDias
       } as tipoTokenInfo)
 
       localStorage.setItem('token', token)

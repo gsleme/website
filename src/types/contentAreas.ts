@@ -1,0 +1,1 @@
+export const Areas:string[] = ['Advogado', 'Design', 'Contabilidade','Logistica', 'Não sei/Nenhuma dessas']
