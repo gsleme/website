@@ -35,6 +35,10 @@
     @apply font-roboto;
   }
 
+  main {
+    @apply flex flex-col items-center px-6 min-h-[86vh] w-full max-w-240;
+  }
+
   button {
     @apply cursor-pointer;
   }
@@ -66,7 +70,7 @@
   }
 
   .botao-md {
-    @apply p-4 bg-purple-900 rounded-lg min-w-40 text-lg cursor-pointer transition-all duration-300 ease-linear hover:bg-purple-200;
+    @apply px-6 py-4 bg-purple-800 text-white rounded-lg min-w-40 text-lg cursor-pointer transition-all duration-300 ease-linear hover:bg-purple-200 hover:text-black;
   }
 
   .formulario {

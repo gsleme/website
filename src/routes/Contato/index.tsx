@@ -30,43 +30,43 @@ function Contato () {
       emoji: RiInstagramFill,
       rede: 'Instagram',
       endereco: '@leme_oficial',
-      link: 'https://a.com'
+      link: 'https://www.instagram.com'
     },
     {
       emoji: RiWhatsappFill,
       rede: 'WhatsApp',
       endereco: '(11) 91234-5678',
-      link: 'https://a.com'
+      link: 'https://www.whatsapp.com'
     },
     {
       emoji: RiYoutubeFill,
       rede: 'YouTube',
       endereco: '@Leme Oficial',
-      link: 'https://a.com'
+      link: 'https://www.youtube.com'
     },
     {
       emoji: RiFacebookFill,
       rede: 'Facebook',
       endereco: '@Leme Oficial',
-      link: 'https://a.com'
+      link: 'https://www.facebook.com'
     },
     {
       emoji: RiLinkedinFill,
       rede: 'LinkedIn',
       endereco: 'in/leme',
-      link: 'https://a.com'
+      link: 'https://www.linkedin.com'
     },
     {
       emoji: RiTwitterXFill,
       rede: 'Twitter',
       endereco: '@leme_oficial',
-      link: 'https://a.com'
+      link: 'https://www.twitter.com'
     },
     {
       emoji: RiTelegram2Fill,
       rede: 'Telegram',
       endereco: '@leme_oficial',
-      link: 'https://a.com'
+      link: 'https://web.telegram.org'
     }
   ]
 

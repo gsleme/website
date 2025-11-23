@@ -17,7 +17,7 @@ export type tipoTokenInfo = {
     exp: number;
 }
 
-export type UsuarioDashboard ={
+export type tipoUsuario ={
   id: string;
   nome: string;
   username: string;

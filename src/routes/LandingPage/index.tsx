@@ -140,42 +140,10 @@ function LandingPage () {
           </div>
           <img src={image2} alt='Imagem ilustrativa' className='lp-image' />
         </div>
-        {/* <ul>
-          <li>
-            <Link to='/criar-perfil'>
-              <h3>Detalhe 1</h3>
-              <img src='' alt='' />
-              <p>
-                Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                Maiores, officiis!
-              </p>
-            </Link>
-          </li>
-          <li>
-            <Link to='/criar-perfil'>
-              <h3>Detalhe 2</h3>
-              <img src='' alt='' />
-              <p>
-                Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                Maiores, officiis!
-              </p>
-            </Link>
-          </li>
-          <li>
-            <Link to='/criar-perfil'>
-              <h3>Detalhe 3</h3>
-              <img src='' alt='' />
-              <p>
-                Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                Maiores, officiis!
-              </p>
-            </Link>
-          </li>
-        </ul> */}
       </section>
 
       <section className='lp-section min-h-[110vh] lg:min-h-screen lg:py-8 relative max-lg:justify-end lg:flex-row lg:items-end'>
-        <div className='h-full w-screen bg-purple-800 absolute top-0 -z-10'></div>
+        <div className='h-full w-screen bg-purple-500 absolute top-0 -z-10'></div>
         <div className='flex flex-col gap-6 my-8 w-screen absolute top-6'>
           <span className='lp-line w-2/5'></span>
           <span className='lp-line w-3/4 ml-6'></span>
@@ -270,7 +238,7 @@ function LandingPage () {
         </div>
         <form
           onSubmit={handleSubmit(onSubmit)}
-          className='formulario rounded-b-none bg-purple-800 w-full max-w-80 fim-convexo'
+          className='formulario rounded-b-none bg-purple-500 w-full max-w-80 fim-convexo'
         >
           <fieldset>
             <div>
@@ -306,11 +274,11 @@ function LandingPage () {
           <button type='submit' className='botao-md'>
             Vamos lá
           </button>
-          <div className='h-5 w-[110%] bg-purple-800 absolute bottom-0 -z-10'></div>
+          <div className='h-5 w-[110%] bg-purple-500 absolute bottom-0 -z-10'></div>
         </form>
       </section>
       <section className='lp-section relative min-h-[110vh]'>
-        <div className='h-full w-screen bg-purple-800 absolute top-0 -z-10'></div>
+        <div className='h-full w-screen bg-purple-500 absolute top-0 -z-10'></div>
         <img src={logo} alt='Logomarca da Leme' className='h-20' />
         <p className='text-center text-xl'>Você no comando da sua carreira</p>
         <button
@@ -323,13 +291,13 @@ function LandingPage () {
       </section>
 
       {/* Pop-ups */}
-      <article
+      <div
         className={`flex h-screen w-screen p-4 justify-center items-center fixed top-0 left-0 transition-full duration-400 bg-black/40 ${
           contato ? 'opacity-100 z-10' : 'opacity-0 -z-10'
         }`}
       >
         <div
-          className={`transition-full duration-400 bg-white p-4 max-w-100 rounded-4xl ${
+          className={`transition-full duration-400 bg-white px-8 py-4 max-w-100 rounded-4xl ${
             contato ? 'translate-y-0' : 'translate-y-100'
           }`}
         >
@@ -352,7 +320,7 @@ function LandingPage () {
             </p>
             <div>
               <img src={image4} alt='Imagem de apoio' className='h-60 py-4' />
-              <div className='flex items-center justify-between'>
+              <div className='flex justify-center items-center gap-4'>
                 <Link className='botao-sm' to='/entrar'>
                   Entrar
                 </Link>
@@ -363,7 +331,7 @@ function LandingPage () {
             </div>
           </div>
         </div>
-      </article>
+      </div>
     </main>
   )
 }

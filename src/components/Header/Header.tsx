@@ -1,12 +1,15 @@
 import { Link, useLocation } from 'react-router-dom'
-import logo from '../../assets/images/logo.png'
-import { LuMenu, LuSearch } from 'react-icons/lu'
 import { useState } from 'react'
-import { RiCloseLargeLine } from 'react-icons/ri'
+import { useAuth } from '../../contexts/AuthContext'
+
+import logo from '../../assets/images/logo.png'
+import image from '../../assets/images/image6.png'
+
 import NavItem from '../NavItem/NavItem'
+import { LuMenu, LuSearch } from 'react-icons/lu'
+import { RiCloseLargeLine } from 'react-icons/ri'
 import { useTheme } from '../../contexts/ThemeContext'
 import { FaMoon } from 'react-icons/fa'
-import { useAuth } from '../../contexts/AuthContext'
 import { FaSun } from 'react-icons/fa6'
 
 function Header ({ visivel }: { visivel: boolean }) {
@@ -202,10 +205,11 @@ function Header ({ visivel }: { visivel: boolean }) {
         }`}
       >
         <div
-          className={`bg-white p-4 rounded-lg shadow-md text-center z-50 transition-transform duration-300 ease-in ${
+          className={`bg-white px-8 py-4 rounded-lg shadow-md text-center z-50 transition-transform duration-300 ease-in ${
             sair ? 'translate-y-0' : 'translate-y-[150vh]'
           }`}
         >
+          <img src={image} alt="Imagem ilustrativa" className='w-50 mx-auto'/>
           <h3 className='titulo-1 my-4'>Tem certeza que quer sair?</h3>
           <div className='flex justify-center gap-4'>
             <button onClick={() => logout()} className='botao-sm'>

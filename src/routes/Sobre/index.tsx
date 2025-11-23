@@ -5,12 +5,14 @@ import integrante1 from '../../assets/images/integrante-felipe.jpeg'
 import integrante2 from '../../assets/images/integrante-gustavo.jpeg'
 import integrante3 from '../../assets/images/integrante-nikolas.jpeg'
 
-import { RiLinkedinFill } from 'react-icons/ri'
+import { RiCloseLargeLine, RiLinkedinFill } from 'react-icons/ri'
 import { ImGithub } from 'react-icons/im'
 import { FaBuildingFlag, FaPeopleRoof } from 'react-icons/fa6'
 import { GiSpellBook } from 'react-icons/gi'
+import { useState } from 'react'
 
 function Sobre () {
+  const [verMais, setVerMais] = useState(false)
   const integrantes: tipoIntegrantes[] = [
     {
       foto: integrante1,
@@ -44,7 +46,10 @@ function Sobre () {
           Lorem ipsum dolor sit amet consectetur, adipisicing elit. Velit ad
           obcaecati dolore suscipit? Repellat voluptatibus sapiente ea, rerum
           qui pariatur repellendus itaque atque unde? Aut esse qui quas animi
-          vero! <button className='font-bold'>... Ver mais</button>
+          vero!{' '}
+          <button className='font-bold' onClick={() => setVerMais(true)}>
+            ... Ver mais
+          </button>
         </p>
       </section>
       <section className='my-8'>
@@ -125,6 +130,37 @@ function Sobre () {
           </li>
         </ul>
       </section>
+
+      <div
+        className={`flex h-screen w-screen p-4 justify-center items-center fixed top-0 left-0 transition-full duration-400 bg-black/40 ${
+          verMais ? 'opacity-100 z-10' : 'opacity-0 -z-10'
+        }`}
+      >
+        <div
+          className={`transition-full duration-400 bg-white px-8 py-4 max-w-100 rounded-4xl ${
+            verMais ? 'translate-y-0' : 'translate-y-100'
+          }`}
+        >
+          <button
+            onClick={() => {
+              setVerMais(false)
+            }}
+            className='p-2 rounded-full bg-purple-500 my-4'
+          >
+            <RiCloseLargeLine />
+          </button>
+          <div className='flex flex-col items-center'>
+            <h2 className='titulo-1'>
+              Conheça mais sobre a Leme: uma plataforma que te coloca no
+              comando.
+            </h2>
+            <p className='h-70 overflow-y-scroll pr-4 my-4'>
+              {/* separar em tags p cada parágrafo */}
+              Lorem ipsum dolor sit amet consectetur adipisicing elit. Deleniti, laudantium et quidem reprehenderit alias quos aspernatur? Laboriosam obcaecati harum maiores eius nihil voluptatem eligendi illum quae, totam iste, quaerat quisquam! Mollitia maxime fugiat incidunt quam eveniet eligendi similique ea corporis sed cum, velit necessitatibus distinctio assumenda, aliquid cupiditate? Adipisci, culpa recusandae, quibusdam enim libero tenetur aliquid numquam iure omnis repellat aliquam unde iste ratione magni amet natus accusamus molestias impedit asperiores eligendi consequatur optio neque quod! Accusantium asperiores dolorem possimus. Cupiditate nulla aspernatur error architecto voluptatem omnis, eaque, ducimus asperiores nesciunt nam temporibus quam odit repellendus odio laboriosam facilis provident laborum neque quae commodi. Facilis quis quam error, magni beatae id eum dolorum. Reiciendis delectus dolor, molestiae ratione quis accusantium natus voluptas consequatur excepturi. Quia numquam soluta quis perferendis possimus, sequi libero suscipit voluptatum non facere perspiciatis, aspernatur blanditiis? Possimus non laudantium velit ipsa. Velit perferendis facere inventore doloribus rerum!
+            </p>
+          </div>
+        </div>
+      </div>
     </main>
   )
 }

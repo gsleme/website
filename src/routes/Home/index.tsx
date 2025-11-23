@@ -34,129 +34,129 @@ export default function Home() {
   // ============================================
 
   const carregarDashboard = async () => {
-    if (!usuario) return;
+    // if (!usuario) return;
 
-    setLoading(true);
-    setError(null);
+    // setLoading(true);
+    // setError(null);
 
-    try {
-      const token = localStorage.getItem('token');
-      if (!token) throw new Error('Token não encontrado');
+    // try {
+    //   const token = localStorage.getItem('token');
+    //   if (!token) throw new Error('Token não encontrado');
 
-      // ============================================
-      // 1. CRIAR/BUSCAR SUGESTÃO (retorna idModulo)
-      // ============================================
-      const resSugestao = await fetch(
-        `${BACKEND_API}/sugestoes/${usuario.id}`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-          },
-          body: JSON.stringify({
-            area: usuario.area,
-            acessibilidade: usuario.acessibilidade,
-            modulos_concluidos: usuario.modulosConcluidos,
-            tempo_plataforma_dias: usuario.tempoPlataformaDias
-          })
-        }
-      );
+    //   // ============================================
+    //   // 1. CRIAR/BUSCAR SUGESTÃO (retorna idModulo)
+    //   // ============================================
+    //   const resSugestao = await fetch(
+    //     `${BACKEND_API}/sugestoes/${usuario.id}`,
+    //     {
+    //       method: 'POST',
+    //       headers: {
+    //         'Content-Type': 'application/json',
+    //         'Authorization': `Bearer ${token}`
+    //       },
+    //       body: JSON.stringify({
+    //         area: usuario.area,
+    //         acessibilidade: usuario.acessibilidade,
+    //         modulos_concluidos: usuario.modulosConcluidos,
+    //         tempo_plataforma_dias: usuario.tempoPlataformaDias
+    //       })
+    //     }
+    //   );
 
-      if (!resSugestao.ok) throw new Error('Erro ao criar sugestão');
+    //   if (!resSugestao.ok) throw new Error('Erro ao criar sugestão');
       
-      const dadosSugestao: Sugestao = await resSugestao.json();
+    //   const dadosSugestao: Sugestao = await resSugestao.json();
 
-      // ============================================
-      // 2. BUSCAR MÓDULO SUGERIDO
-      // ============================================
-      const resModulo = await fetch(
-        `${BACKEND_API}/modulos/${dadosSugestao.idModulo}`,
-        {
-          headers: { 'Authorization': `Bearer ${token}` }
-        }
-      );
+    //   // ============================================
+    //   // 2. BUSCAR MÓDULO SUGERIDO
+    //   // ============================================
+    //   const resModulo = await fetch(
+    //     `${BACKEND_API}/modulos/${dadosSugestao.idModulo}`,
+    //     {
+    //       headers: { 'Authorization': `Bearer ${token}` }
+    //     }
+    //   );
 
-      if (!resModulo.ok) throw new Error('Módulo não encontrado');
+    //   if (!resModulo.ok) throw new Error('Módulo não encontrado');
       
-      const moduloSugerido: Modulo = await resModulo.json();
+    //   const moduloSugerido: Modulo = await resModulo.json();
 
-      // ============================================
-      // 3. BUSCAR TRILHA (usando idTrilha do módulo)
-      // ============================================
-      const resTrilha = await fetch(
-        `${BACKEND_API}/trilhas/${moduloSugerido.idTrilha}`,
-        {
-          headers: { 'Authorization': `Bearer ${token}` }
-        }
-      );
+    //   // ============================================
+    //   // 3. BUSCAR TRILHA (usando idTrilha do módulo)
+    //   // ============================================
+    //   const resTrilha = await fetch(
+    //     `${BACKEND_API}/trilhas/${moduloSugerido.idTrilha}`,
+    //     {
+    //       headers: { 'Authorization': `Bearer ${token}` }
+    //     }
+    //   );
 
-      if (!resTrilha.ok) throw new Error('Trilha não encontrada');
+    //   if (!resTrilha.ok) throw new Error('Trilha não encontrada');
       
-      const dadosTrilha: Trilha = await resTrilha.json();
-      setTrilha(dadosTrilha);
+    //   const dadosTrilha: Trilha = await resTrilha.json();
+    //   setTrilha(dadosTrilha);
 
-      // ============================================
-      // 4. BUSCAR TODOS MÓDULOS DA TRILHA
-      // ============================================
+    //   // ============================================
+    //   // 4. BUSCAR TODOS MÓDULOS DA TRILHA
+    //   // ============================================
 
-      const resModulos = await fetch(
-        `${BACKEND_API}/modulos?trilha=${moduloSugerido.idTrilha}`,
-        {
-          headers: { 'Authorization': `Bearer ${token}` }
-        }
-      );
+    //   const resModulos = await fetch(
+    //     `${BACKEND_API}/modulos?trilha=${moduloSugerido.idTrilha}`,
+    //     {
+    //       headers: { 'Authorization': `Bearer ${token}` }
+    //     }
+    //   );
 
-      if (!resModulos.ok) throw new Error('Erro ao buscar módulos');
+    //   if (!resModulos.ok) throw new Error('Erro ao buscar módulos');
       
-      const todosModulos: Modulo[] = await resModulos.json();
-      setModulos(todosModulos);
+    //   const todosModulos: Modulo[] = await resModulos.json();
+    //   setModulos(todosModulos);
 
-      // ============================================
-      // 5. CALCULAR PROGRESSO
-      // ============================================
-      const resProgresso = await fetch(
-        `${BACKEND_API}/progressos/trilha/${moduloSugerido.idTrilha}/usuario/${usuario.id}`,
-        {
-          headers: { 'Authorization': `Bearer ${token}` }
-        }
-      );
+    //   // ============================================
+    //   // 5. CALCULAR PROGRESSO
+    //   // ============================================
+    //   const resProgresso = await fetch(
+    //     `${BACKEND_API}/progressos/trilha/${moduloSugerido.idTrilha}/usuario/${usuario.id}`,
+    //     {
+    //       headers: { 'Authorization': `Bearer ${token}` }
+    //     }
+    //   );
 
-      if (!resProgresso.ok) throw new Error('Erro ao calcular progresso');
+    //   if (!resProgresso.ok) throw new Error('Erro ao calcular progresso');
       
-      const dadosProgresso: ProgressoTrilha = await resProgresso.json();
-      setProgresso(dadosProgresso);
-      console.log('✅ Progresso:', `${dadosProgresso.percentual}%`);
+    //   const dadosProgresso: ProgressoTrilha = await resProgresso.json();
+    //   setProgresso(dadosProgresso);
+    //   console.log('✅ Progresso:', `${dadosProgresso.percentual}%`);
 
-      // ============================================
-      // 6. CRIAR PREVISÃO (204 No Content)
-      // ============================================
+    //   // ============================================
+    //   // 6. CRIAR PREVISÃO (204 No Content)
+    //   // ============================================
       
-      console.log('🎯 Salvando previsão...');
-      await fetch(
-        `${BACKEND_API}/previsoes/${usuario.id}`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-          },
-          body: JSON.stringify({
-            area: usuario.area,
-            acessibilidade: usuario.acessibilidade,
-            modulos_concluidos: usuario.modulosConcluidos,
-            tempo_plataforma_dias: usuario.tempoPlataformaDias
-          })
-        }
-      );
+    //   console.log('🎯 Salvando previsão...');
+    //   await fetch(
+    //     `${BACKEND_API}/previsoes/${usuario.id}`,
+    //     {
+    //       method: 'POST',
+    //       headers: {
+    //         'Content-Type': 'application/json',
+    //         'Authorization': `Bearer ${token}`
+    //       },
+    //       body: JSON.stringify({
+    //         area: usuario.area,
+    //         acessibilidade: usuario.acessibilidade,
+    //         modulos_concluidos: usuario.modulosConcluidos,
+    //         tempo_plataforma_dias: usuario.tempoPlataformaDias
+    //       })
+    //     }
+    //   );
 
-    } catch (err) {
-      const message = err instanceof Error ? err.message : 'Erro desconhecido';
-      setError(message);
-      console.error('❌ Erro:', err);
-    } finally {
-      setLoading(false);
-    }
+    // } catch (err) {
+    //   const message = err instanceof Error ? err.message : 'Erro desconhecido';
+    //   setError(message);
+    //   console.error('❌ Erro:', err);
+    // } finally {
+    //   setLoading(false);
+    // }
   };
 
   // ============================================

@@ -2,10 +2,9 @@ import { useState } from 'react'
 import { useForm, type SubmitHandler } from 'react-hook-form'
 import { IoMdEye, IoMdEyeOff } from 'react-icons/io'
 import { Link } from 'react-router-dom'
-import type { tipoUsuarioForm } from '../../types/tiposUsuario'
+import type { tipoUsuario, tipoUsuarioForm } from '../../types/tiposUsuario'
 import ErrorAlert from '../../components/ErrorAlert/ErrorAlert'
 import { useAuth } from '../../contexts/AuthContext'
-import type { Usuario } from '../../types/tipoDashboard'
 import { Areas } from '../../types/contentAreas'
 const API_USUARIOS = import.meta.env.VITE_API_BASE_USUARIOS
 
@@ -30,14 +29,14 @@ function Cadastro () {
       setLoading(true)
 
       const checkResponse = await fetch(API_USUARIOS)
-      const usuarios: Usuario[] = await checkResponse.json()
+      const usuarios: tipoUsuario[] = await checkResponse.json()
 
       const emailJaExiste = usuarios.some(
-        (usuario: Usuario) => usuario.email === data.email
+        (usuario: tipoUsuario) => usuario.email === data.email
       )
 
       const usernameJaExiste = usuarios.some(
-        (usuario: Usuario) => usuario.username === data.username
+        (usuario: tipoUsuario) => usuario.username === data.username
       )
 
       if (emailJaExiste) {

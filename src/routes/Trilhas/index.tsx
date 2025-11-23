@@ -1,70 +1,77 @@
 import { useEffect, useState } from 'react'
-
-import image from '../../assets/images/image.png'
+import { Link } from 'react-router-dom'
+import type { Modulo, Trilha } from '../../types/tipoTrilhas'
 
 import { FaAward } from 'react-icons/fa6'
-import { Link } from 'react-router-dom'
-import type { Trilha } from '../../types/tipoDashboard'
+const API_TRILHAS = import.meta.env.VITE_API_BASE_TRILHAS
+const API_MODULOS = import.meta.env.VITE_API_BASE_MODULOS
 
 function Trilhas () {
-  const [categoria, setCategoria] = useState('Softskills')
-  const [idTrilha, setIdTrilha] = useState('')
-  
-  useEffect(()=>{
-    const trilhaEncontrada = trilhas.find((trilha:Trilha)=> trilha.areaFoco == categoria)
-    setIdTrilha(trilhaEncontrada?.id ?? '')
-  },[])
+  const [loading, setLoading] = useState(false)
+  const [trilhas, setTrilhas] = useState<Trilha[]>([])
+  const [trilhaSelecionada, setTrilhaSelecionada] = useState<Trilha>()
+  const [titulos, setTitulos] = useState<string[]>([])
+  const [tituloSelecionado, setTituloSelecionado] = useState('')
+  const [modulosSelecionados, setModulosSelecionados] = useState<Modulo[]>([])
 
-  const categorias: string[] = [
-    'Categoria',
-    'Categoria',
-    'Categoria',
-    'Categoria',
-    'Categoria',
-    'Categoria',
-    'Categoria',
-    'Categoria',
-    'Categoria',
-    'Categoria',
-    'Categoria',
-    'Categoria'
-  ]
+  useEffect(() => {
+    const fetchTrilhas = async () => {
+      try {
+        const trilhaResponse = await fetch(API_TRILHAS)
 
-  const trilhas:Trilha[] = []
+        if (!trilhaResponse.ok) throw new Error()
 
-  const modules: {
-    titulo: string
-    descricao: string
-    imagem: string
-    xp_recompensa: number
-  }[] = [
-    {
-      titulo: 'Otimização de Pesquisa e Análise',
-      descricao: 'Técnicas para usar IA na criação e revisão de contratos.',
-      imagem: image,
-      xp_recompensa: 100
-    },
-    {
-      titulo: 'Otimização de Pesquisa e Análise',
-      descricao: 'Técnicas para usar IA na criação e revisão de contratos.',
-      imagem: image,
-      xp_recompensa: 100
-    },
-    {
-      titulo: 'Otimização de Pesquisa e Análise',
-      descricao: 'Técnicas para usar IA na criação e revisão de contratos.',
-      imagem: image,
-      xp_recompensa: 100
-    },
-    {
-      titulo: 'Otimização de Pesquisa e Análise',
-      descricao: 'Técnicas para usar IA na criação e revisão de contratos.',
-      imagem: image,
-      xp_recompensa: 100
+        const trilhas: Trilha[] = await trilhaResponse.json()
+        setTrilhas(trilhas)
+        const titulosGerais: string[] = []
+        trilhas.forEach((t: Trilha) => {
+          titulosGerais.push(t.titulo)
+        })
+
+        setTitulos(titulosGerais)
+        console.log(titulos)
+      } catch (erro) {
+        if (erro instanceof Error) {
+          alert('Erro inesperado... Tente novamente mais tarde')
+        }
+        
+      } finally {
+        setLoading(false)
+      }
     }
-  ]
 
-  const [active, setActive] = useState<number>(categorias.length / 2)
+    fetchTrilhas()
+  }, [])
+
+  useEffect(() => {
+    setTrilhaSelecionada(
+      trilhas.find((trilha: Trilha) => trilha.titulo == tituloSelecionado)
+    )
+    const fetchModulos = async () => {
+      try {
+        const moduloResponse = await fetch(API_MODULOS)
+
+        if (!moduloResponse.ok) throw new Error()
+
+        const modulos: Modulo[] = await moduloResponse.json()
+        setModulosSelecionados(
+          modulos.filter(
+            (modulo: Modulo) => modulo.idTrilha == trilhaSelecionada?.id
+          )
+        )
+      } catch (erro) {
+        if (erro instanceof Error) {
+          alert('Erro inesperado... Tente novamente mais tarde')
+        }
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchModulos()
+  }, [tituloSelecionado, trilhaSelecionada])
+
+  const [active, setActive] = useState<number>(titulos.length / 2)
 
   return (
     <main>
@@ -81,7 +88,7 @@ function Trilhas () {
           <h2 className='text-xl text-center font-bold'>Explorar</h2>
           <div className='flex relative x-gradient-transparent w-screen max-w-240'>
             <ul className='flex gap-8 md:gap-12 w-full mt-4 px-20 overflow-x-scroll no-scrollbar translate-y-1'>
-              {categorias.map((categoria, index) => (
+              {titulos.map((titulo, index) => (
                 <li
                   key={index}
                   className='flex flex-col items-center text-center gap-2'
@@ -89,10 +96,10 @@ function Trilhas () {
                   <button
                     onClick={() => {
                       setActive(index)
-                      setCategoria(categoria)
+                      setTituloSelecionado(titulo)
                     }}
                   >
-                    {categoria}
+                    {titulo}
                   </button>
                   <div
                     className={`h-2 w-[120%] ${
@@ -108,42 +115,30 @@ function Trilhas () {
       <section className='flex justify-center w-full min-h-100 p-4 relative'>
         <div className='h-full w-screen bg-gray-800 absolute top-0 -z-10'></div>
         <ul className='flex flex-col items-center gap-4 w-full'>
-          {modules
-            .filter(
-              (m: {
-                titulo: string
-                descricao: string
-                imagem: string
-                xp_recompensa: number
-              }) => m.titulo == idTrilha
-            )
-            .map((module, index) => (
-              <li key={index}>
-                <Link
-                  to={`/trilhas/{idTrilha}/{module.titulo.slice(10)}`}
-                  className='flex p-4 rounded-xl bg-gray-300 w-full max-w-150 gap-4 hover:scale-110'
-                >
-                  <div className='flex flex-col gap-2 items-center min-w-20 my-auto'>
-                    <img src={module.imagem} alt='' className='h-16 md:h-24' />
-                    <div className='flex gap-2 items-center'>
-                      <FaAward className='text-xl' />
-                      <p className='text-sm'>
-                        <span className='text-lg'>{module.xp_recompensa}</span>{' '}
-                        xp
-                      </p>
-                    </div>
+          {modulosSelecionados.map((modulo, index) => (
+            <li key={index}>
+              <Link
+                to={`/trilhas/${modulo.idTrilha}/${modulo.titulo.slice(10)}`}
+                className='flex p-4 rounded-xl bg-gray-300 w-full max-w-150 gap-4 hover:scale-110'
+              >
+                <div className='flex flex-col gap-2 items-center min-w-20 my-auto'>
+                  <img src={''} alt='' className='h-16 md:h-24' />
+                  <div className='flex gap-2 items-center'>
+                    <FaAward className='text-xl' />
+                    <p className='text-sm'>
+                      <span className='text-lg'>{modulo.xpRecompensa}</span> xp
+                    </p>
                   </div>
+                </div>
+                <div>
                   <div>
-                    <div>
-                      <h3 className='font-bold text-xl mb-2'>
-                        {module.titulo}
-                      </h3>
-                      <p>{module.descricao}</p>
-                    </div>
+                    <h3 className='font-bold text-xl mb-2'>{modulo.titulo}</h3>
+                    <p>{modulo.descricao}</p>
                   </div>
-                </Link>
-              </li>
-            ))}
+                </div>
+              </Link>
+            </li>
+          ))}
         </ul>
       </section>
     </main>

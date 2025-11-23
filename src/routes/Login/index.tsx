@@ -34,25 +34,21 @@ function Login () {
       if (!response.ok) {
         if (response.status == 404) {
           setError('email', { type: 'manual', message: 'Email não cadastrado' })
-
         } else if (response.status == 401) {
           setError('senha', { type: 'manual', message: 'Senha incorreta' })
-
         } else {
           throw new Error()
         }
       }
 
-      const token:{token: string} = await response.json()
+      const token: { token: string } = await response.json()
 
       login(token.token)
       alert('Boas vindas a Leme!')
-
     } catch (erro) {
       if (erro instanceof Error) {
         alert('Erro inesperado... Tente novamente mais tarde')
       }
-
     } finally {
       setLoading(false)
     }
@@ -81,7 +77,13 @@ function Login () {
               id='email'
               placeholder='Email'
               className={errors.email?.message && 'red-line'}
-              {...register('email', { required: 'Campo obrigatório' })}
+              {...register('email', {
+                required: 'Campo obrigatório',
+                pattern: {
+                  value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+                  message: 'Email inválido'
+                }
+              })}
             />
             <ErrorAlert mensagem={errors.email?.message} />
           </div>
@@ -91,7 +93,19 @@ function Login () {
               id='senha'
               placeholder='Senha'
               className={errors.senha?.message && 'red-line'}
-              {...register('senha', { required: 'Campo obrigatório' })}
+              {...register('senha', {
+                required: 'Campo obrigatório',
+                pattern: {
+                  value:
+                    /^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[^a-zA-Z0-9]).+$/,
+                  message:
+                    'Precisa ter pelo menos um número, uma letra maiúscula, uma letra minúscula, um número e um símbolo'
+                },
+                minLength: {
+                  value: 6,
+                  message: 'Precisa de pelo menos 6 caracteres'
+                }
+              })}
             />
             <ErrorAlert mensagem={errors.senha?.message} />
           </div>
