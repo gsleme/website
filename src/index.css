@@ -93,10 +93,6 @@
   .titulo-1 {
     @apply font-staatliches text-4xl font-extrabold;
   }
-
-  .fim-convexo {
-    @apply relative before:content-["-"] before:bg-white before:absolute before:bottom-0 before:right-full before:rounded-full before:text-white before:size-10 after:content-["-"] after:bg-white after:absolute after:bottom-0 after:left-full after:rounded-full after:text-white after:size-10;
-  }
 }
 
 @layer utilities {
@@ -108,15 +104,19 @@
     @apply transition-all ease-in;
   }
 
-  .border-gradient-purple {
-    border-image: linear-gradient(to right, #a855f7, transparent) 1;
-  }
-
   .red-line {
     @apply border border-red-500 bg-red-200 text-red-600;
   }
 
   .no-scrollbar {
     @apply [scrollbar-width:none] [&::-webkit-scrollbar]:hidden;
+  }
+
+  .fim-convexo {
+    @apply relative before:bg-white before:absolute before:bottom-0 before:right-full before:rounded-full before:size-10 after:bg-white after:absolute after:bottom-0 after:left-full after:rounded-full after:size-10;
+  }
+
+  .x-gradient-transparent {
+    @apply before:absolute before:h-full before:w-20 before:left-0 before:bg-linear-to-r before:from-white before:to-white/0 before:z-1 after:absolute after:h-full after:w-20 after:right-0 after:bg-linear-to-l after:from-white after:to-white/0 after:z-1;
   }
 }
