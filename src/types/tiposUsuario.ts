@@ -1,4 +1,4 @@
-export type tipoUserForm = {
+export type tipoUsuarioForm = {
     nome:string;
     username:string;
     email:string;
@@ -11,4 +11,5 @@ export type tipoTokenInfo = {
     nome:string;
     username:string;
     email:string;
+    exp: number;
 }

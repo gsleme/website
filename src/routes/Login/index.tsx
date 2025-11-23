@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useForm, type SubmitHandler } from 'react-hook-form'
 import { IoMdEye, IoMdEyeOff } from 'react-icons/io'
 import { Link } from 'react-router-dom'
-import type { tipoUserForm } from '../../types/tiposUsuario'
+import type { tipoUsuarioForm } from '../../types/tiposUsuario'
 import ErrorAlert from '../../components/ErrorAlert/ErrorAlert'
 
 function Login () {
@@ -11,9 +11,9 @@ function Login () {
     register,
     handleSubmit,
     formState: { errors }
-  } = useForm<tipoUserForm>()
+  } = useForm<tipoUsuarioForm>()
 
-  const onSubmit: SubmitHandler<tipoUserForm> = async data => {
+  const onSubmit: SubmitHandler<tipoUsuarioForm> = async data => {
     console.log(data)
   }
 

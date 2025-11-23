@@ -4,6 +4,8 @@ import { LuMenu, LuSearch } from 'react-icons/lu'
 import { useState } from 'react'
 import { RiCloseLargeLine } from 'react-icons/ri'
 import NavItem from '../NavItem/NavItem'
+import { useTheme } from '../../contexts/ThemeContext'
+import { FaMoon, FaRegSun } from 'react-icons/fa'
 
 function Header ({ visivel }: { visivel: boolean }) {
   const location = useLocation()
@@ -12,6 +14,7 @@ function Header ({ visivel }: { visivel: boolean }) {
   const locationLP = location.pathname == '/'
   const locationEntrar = location.pathname == '/entrar'
   const locationCadastrar = location.pathname == '/criar-perfil'
+  const { tema, setTema } = useTheme()
 
   const switchState = (state: string) => {
     if (state == 'buscar') {
@@ -55,6 +58,9 @@ function Header ({ visivel }: { visivel: boolean }) {
                 Cadastrar
               </Link>
             </nav>
+            <button onClick={() => setTema(tema == 'light' ? 'dark' : 'light')}>
+              {tema == 'light' ? <FaRegSun /> : <FaMoon />}
+            </button>
           </div>
         </div>
       </header>

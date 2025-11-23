@@ -15,9 +15,18 @@
 @theme {
   --font-staatliches: 'Staatliches', sans-serif;
   --font-roboto: 'Roboto', sans-serif;
+  --color-primaria: var(--primaria);
 }
 
 @layer base {
+  :root {
+    --primaria: #E7FF6F;
+  }
+
+  .dark {
+    --primaria: #E1E1E1;
+  }
+
   html {
     @apply text-[90%] md:text-[100%] lg:text-[110%];
   }
@@ -57,7 +66,7 @@
   }
 
   .botao-sm {
-    @apply flex items-center justify-center p-2 min-w-20 rounded-lg bg-purple-600 cursor-pointer transition-all duration-300 ease-linear hover:bg-purple-200;
+    @apply flex items-center justify-center p-2 min-w-20 rounded-lg bg-primaria cursor-pointer transition-all duration-300 ease-linear hover:bg-purple-200;
   }
 
   .botao-md {

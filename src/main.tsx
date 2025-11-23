@@ -18,28 +18,34 @@ import Login from './routes/Login/index.tsx'
 import Modulo from './routes/Modulo/index.tsx'
 import Sobre from './routes/Sobre/index.tsx'
 import Trilhas from './routes/Trilhas/index.tsx'
+import { AuthProvider } from './contexts/AuthContext.tsx'
+import { ThemeProvider } from './contexts/ThemeContext.tsx'
 
 const router = createBrowserRouter([
   {
     path: '/',
-    element: <App/>,
-    errorElement: <ErrorPage/>,
+    element: <App />,
+    errorElement: <ErrorPage />,
     children: [
-      { path: '/criar-perfil', element: <Cadastro/> },
-      { path: '/contato', element: <Contato/> },
-      { path: '/perguntas-frequentes', element: <Faq/> },
-      { path: '/dashboard', element: <Home/> },
-      { path: '/', element: <LandingPage/> },
-      { path: '/entrar', element: <Login/> },
-      { path: '/sobre-nos', element: <Sobre/> },
-      { path: '/trilhas', element: <Trilhas/> },
-      { path: '/trilhas/:trilha/:modulo', element: <Modulo/> }
+      { path: '/criar-perfil', element: <Cadastro /> },
+      { path: '/contato', element: <Contato /> },
+      { path: '/perguntas-frequentes', element: <Faq /> },
+      { path: '/dashboard', element: <Home /> },
+      { path: '/', element: <LandingPage /> },
+      { path: '/entrar', element: <Login /> },
+      { path: '/sobre-nos', element: <Sobre /> },
+      { path: '/trilhas', element: <Trilhas /> },
+      { path: '/trilhas/:trilha/:modulo', element: <Modulo /> }
     ]
   }
 ])
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <RouterProvider router={router}/>
+    <AuthProvider>
+      <ThemeProvider>
+        <RouterProvider router={router} />
+      </ThemeProvider>
+    </AuthProvider>
   </StrictMode>
 )
