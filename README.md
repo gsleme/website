@@ -1,7 +1,3 @@
-Aqui está um **README profissional, direto e no mesmo estilo do Consulta Certa**, mas totalmente adaptado para o **LEME** — incluindo o link do repositório solicitado.
-
-Você pode **copiar e colar como README.md** no GitHub.
-
 ---
 
 # 🌐 LEME — Plataforma SaaS de Reskilling Inclusivo com IA
