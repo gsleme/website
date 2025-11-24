@@ -54,6 +54,7 @@ export default function Home() {
         modulos_concluidos: usuario.modulosConcluidos,
         tempo_plataforma_dias: usuario.tempoPlataformaDias
       }
+
       console.log(payload)
       const resSugestao = await fetch(
         `${API_SUGESTOES}/${usuario.id}`,
@@ -71,11 +72,13 @@ export default function Home() {
       // ============================================
       // 2. BUSCAR MÓDULO SUGERIDO
       // ============================================
-      const resModulo = await fetch(`${API_MODULOS}/${dadosSugestao.idModulo}`);
+      const resModulo = await fetch(`${API_MODULOS}`);
 
       if (!resModulo.ok) throw new Error('Módulo não encontrado');
-      
-      const moduloSugerido: tipoModulo = await resModulo.json();
+    
+      const modulos: tipoModulo[] = await resModulo.json();
+      const modulosSugeridosSugest = modulos.filter((m:tipoModulo)=> m.idTrilha == dadosSugestao.idTrilha)
+      const moduloSugerido = modulosSugeridosSugest[0]
 
       // ============================================
       // 3. BUSCAR TRILHA (usando idTrilha do módulo)
