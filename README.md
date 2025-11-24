@@ -165,12 +165,3 @@ LEME/
 📌 **Backlog (Trello / Jira):** *(https://www.notion.so/Backlog-da-Sprint-com-Checkboxes-Resumo-e-Observa-es-2316cd0b4d78801e85b1ceddda572c7e?source=copy_link)*
 
 ---
-
-Se quiser, eu também posso:
-
-✅ Gerar badges
-✅ Criar a capa visual para o README
-✅ Organizar uma versão reduzida ou mais formal
-✅ Gerar um README totalmente visual com emojis e estrutura premium
-
-Quer alguma dessas versões?
