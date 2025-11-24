@@ -14,6 +14,14 @@ export type tipoTokenInfo = {
     acessibilidade: string;
     modulosConcluidos: number;
     tempoPlataformaDias: number;
+}
+
+export type tipoToken = {
+    sub: string;
+    area: string;
+    acessibilidade: string;
+    modulosConcluidos: number;
+    tempoPlataformaDias: number;
     exp: number;
 }
 

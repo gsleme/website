@@ -7,7 +7,7 @@ import {
 } from 'react'
 import { jwtDecode } from 'jwt-decode'
 
-import type { tipoTokenInfo } from '../types/tiposUsuario'
+import type { tipoToken, tipoTokenInfo } from '../types/tiposUsuario'
 import type { tipoAuthContext } from '../types/tipoContext'
 
 const AuthContext = createContext<tipoAuthContext | undefined>(undefined)
@@ -21,12 +21,12 @@ export function AuthProvider ({ children }: { children: ReactNode }) {
 
     if (token) {
       try {
-        const decoded = jwtDecode<tipoTokenInfo>(token)
+        const decoded = jwtDecode<tipoToken>(token)
 
         if (Number(decoded.exp) > Math.floor(Date.now() / 1000)) {
           setToken(token)
           setUsuario({
-            id: decoded.id,
+            id: decoded.sub,
             area: decoded.area,
             acessibilidade: decoded.acessibilidade,
             modulosConcluidos: decoded.modulosConcluidos,
@@ -46,12 +46,12 @@ export function AuthProvider ({ children }: { children: ReactNode }) {
 
   const login = (token: string) => {
     try {
-      const decoded = jwtDecode<tipoTokenInfo>(token)
+      const decoded = jwtDecode<tipoToken>(token)
       if (!decoded) return
 
       setToken(token)
       setUsuario({
-        id: decoded.id,
+        id: decoded.sub,
         area: decoded.area,
         acessibilidade: decoded.acessibilidade,
         modulosConcluidos: decoded.modulosConcluidos,
@@ -86,5 +86,5 @@ export const useAuth = (): tipoAuthContext => {
     throw new Error('useAuth precisa estar dentro de um AuthProvider')
   }
 
-  return context
+  return context
 }

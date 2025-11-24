@@ -47,17 +47,21 @@ export default function Home() {
       // ============================================
       // 1. CRIAR/BUSCAR SUGESTÃO (retorna idModulo)
       // ============================================
+      
+      const payload = {
+        area: usuario.area,
+        acessibilidade: usuario.acessibilidade,
+        modulos_concluidos: usuario.modulosConcluidos,
+        tempo_plataforma_dias: usuario.tempoPlataformaDias
+      }
+
+      console.log(payload)
       const resSugestao = await fetch(
         `${API_SUGESTOES}/${usuario.id}`,
         {
           method: 'POST',
           headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify({
-            area: usuario.area,
-            acessibilidade: usuario.acessibilidade,
-            modulos_concluidos: usuario.modulosConcluidos,
-            tempo_plataforma_dias: usuario.tempoPlataformaDias
-          })
+          body: JSON.stringify(payload)
         }
       );
 
@@ -105,7 +109,6 @@ export default function Home() {
       if (!resProgresso.ok) throw new Error('Erro ao calcular progresso');
       
       const dadosProgresso: ProgressoTrilha = await resProgresso.json();
-      const dadosEspecificos = dadosProgresso
       setProgresso(dadosProgresso);
       console.log('✅ Progresso:', `${dadosProgresso.percentual}%`);
 
