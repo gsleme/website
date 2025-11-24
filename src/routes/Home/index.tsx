@@ -104,18 +104,7 @@ export default function Home() {
       setModulos(todosModulosDaTrilha);
 
       // ============================================
-      // 5. CALCULAR PROGRESSO
-      // ============================================
-      const resProgresso = await fetch(`${API_PROGRESSOS}/${usuario.id}`);
-
-      if (!resProgresso.ok) throw new Error('Erro ao calcular progresso');
-      
-      const dadosProgresso: ProgressoTrilha = await resProgresso.json();
-      setProgresso(dadosProgresso);
-      console.log('✅ Progresso:', `${dadosProgresso.percentual}%`);
-
-      // ============================================
-      // 6. CRIAR PREVISÃO (204 No Content)
+      // 5. CRIAR PREVISÃO (204 No Content)
       // ============================================
       
       console.log('🎯 Salvando previsão...');
