@@ -54,7 +54,6 @@ export default function Home() {
         modulos_concluidos: usuario.modulosConcluidos,
         tempo_plataforma_dias: usuario.tempoPlataformaDias
       }
-
       console.log(payload)
       const resSugestao = await fetch(
         `${API_SUGESTOES}/${usuario.id}`,

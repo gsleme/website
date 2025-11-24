@@ -175,11 +175,6 @@ function Header ({ visivel }: { visivel: boolean }) {
                 link='/contato'
                 onClick={() => switchState('menu')}
               />
-              <NavItem
-                nome='Minha conta'
-                link='/minha-conta'
-                onClick={() => switchState('menu')}
-              />
               <li>
                 <button
                   onClick={() => setSair(true)}

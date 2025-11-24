@@ -212,7 +212,7 @@ function Cadastro () {
                   >
                     <input
                       type='radio'
-                      value={acessibilidade}
+                      value={acessibilidade.toLowerCase()}
                       {...register('acessibilidade', { required: 'Campo obrigatório' })}
                       className='hidden peer'
                     />
