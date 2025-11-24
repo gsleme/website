@@ -1,4 +1,4 @@
-export type Trilha ={
+export type tipoTrilha ={
   id: string;
   titulo: string;
   descricao: string;
@@ -6,12 +6,13 @@ export type Trilha ={
   xpTrilha: number;
 }
 
-export type Modulo ={
+export type tipoModulo ={
   id: string;
   idTrilha: string;
   titulo: string;
   descricao: string;
   tipo: string;
+  conteudo:string;
   xpRecompensa: number;
   adaptacaoNecessaria: string;
 }

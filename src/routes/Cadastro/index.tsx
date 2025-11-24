@@ -83,9 +83,9 @@ function Cadastro () {
 
       if (!loginResponse.ok) throw new Error()
 
-      const token = await loginResponse.json()
+      const token: { token: string } = await loginResponse.json()
 
-      login(token)
+      login(token.token)
       alert('Boas vindas a Leme!')
     } catch (erro) {
       if (erro instanceof Error) {

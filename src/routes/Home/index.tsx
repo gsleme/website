@@ -3,10 +3,14 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import type { Sugestao } from '../../types/tipoDashboard'
 import type { ProgressoTrilha } from '../../types/tipoDashboard'
-import type { Trilha } from '../../types/tipoTrilhas'
-import type { Modulo } from '../../types/tipoTrilhas'
+import type { tipoTrilha } from '../../types/tipoTrilhas'
+import type { tipoModulo } from '../../types/tipoTrilhas'
 
-const BACKEND_API = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8080';
+const API_SUGESTOES = import.meta.env.VITE_API_BASE_SUGESTOES
+const API_PREVISOES = import.meta.env.VITE_API_BASE_PREVISOES
+const API_PROGRESSOS = import.meta.env.VITE_API_BASE_PROGRESSOS
+const API_TRILHAS = import.meta.env.VITE_API_BASE_TRILHAS
+const API_MODULOS = import.meta.env.VITE_API_BASE_MODULOS
 
 // ============================================
 // COMPONENTE
@@ -17,8 +21,8 @@ export default function Home() {
   const { usuario } = useAuth();
   
   // Estados
-  const [trilha, setTrilha] = useState<Trilha | null>(null);
-  const [modulos, setModulos] = useState<Modulo[]>([]);
+  const [trilha, setTrilha] = useState<tipoTrilha | null>(null);
+  const [modulos, setModulos] = useState<tipoModulo[]>([]);
   const [progresso, setProgresso] = useState<ProgressoTrilha | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -34,129 +38,103 @@ export default function Home() {
   // ============================================
 
   const carregarDashboard = async () => {
-    // if (!usuario) return;
+    if (!usuario) return;
 
-    // setLoading(true);
-    // setError(null);
+    setLoading(true);
+    setError(null);
 
-    // try {
-    //   const token = localStorage.getItem('token');
-    //   if (!token) throw new Error('Token não encontrado');
+    try {
+      // ============================================
+      // 1. CRIAR/BUSCAR SUGESTÃO (retorna idModulo)
+      // ============================================
+      const resSugestao = await fetch(
+        `${API_SUGESTOES}/${usuario.id}`,
+        {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({
+            area: usuario.area,
+            acessibilidade: usuario.acessibilidade,
+            modulos_concluidos: usuario.modulosConcluidos,
+            tempo_plataforma_dias: usuario.tempoPlataformaDias
+          })
+        }
+      );
 
-    //   // ============================================
-    //   // 1. CRIAR/BUSCAR SUGESTÃO (retorna idModulo)
-    //   // ============================================
-    //   const resSugestao = await fetch(
-    //     `${BACKEND_API}/sugestoes/${usuario.id}`,
-    //     {
-    //       method: 'POST',
-    //       headers: {
-    //         'Content-Type': 'application/json',
-    //         'Authorization': `Bearer ${token}`
-    //       },
-    //       body: JSON.stringify({
-    //         area: usuario.area,
-    //         acessibilidade: usuario.acessibilidade,
-    //         modulos_concluidos: usuario.modulosConcluidos,
-    //         tempo_plataforma_dias: usuario.tempoPlataformaDias
-    //       })
-    //     }
-    //   );
-
-    //   if (!resSugestao.ok) throw new Error('Erro ao criar sugestão');
+      if (!resSugestao.ok) throw new Error('Erro ao criar sugestão');
       
-    //   const dadosSugestao: Sugestao = await resSugestao.json();
+      const dadosSugestao: Sugestao = await resSugestao.json();
 
-    //   // ============================================
-    //   // 2. BUSCAR MÓDULO SUGERIDO
-    //   // ============================================
-    //   const resModulo = await fetch(
-    //     `${BACKEND_API}/modulos/${dadosSugestao.idModulo}`,
-    //     {
-    //       headers: { 'Authorization': `Bearer ${token}` }
-    //     }
-    //   );
+      // ============================================
+      // 2. BUSCAR MÓDULO SUGERIDO
+      // ============================================
+      const resModulo = await fetch(`${API_MODULOS}/${dadosSugestao.idModulo}`);
 
-    //   if (!resModulo.ok) throw new Error('Módulo não encontrado');
+      if (!resModulo.ok) throw new Error('Módulo não encontrado');
       
-    //   const moduloSugerido: Modulo = await resModulo.json();
+      const moduloSugerido: tipoModulo = await resModulo.json();
 
-    //   // ============================================
-    //   // 3. BUSCAR TRILHA (usando idTrilha do módulo)
-    //   // ============================================
-    //   const resTrilha = await fetch(
-    //     `${BACKEND_API}/trilhas/${moduloSugerido.idTrilha}`,
-    //     {
-    //       headers: { 'Authorization': `Bearer ${token}` }
-    //     }
-    //   );
+      // ============================================
+      // 3. BUSCAR TRILHA (usando idTrilha do módulo)
+      // ============================================
+      const resTrilha = await fetch(`${API_TRILHAS}/${moduloSugerido.idTrilha}`);
 
-    //   if (!resTrilha.ok) throw new Error('Trilha não encontrada');
+      if (!resTrilha.ok) throw new Error('Trilha não encontrada');
       
-    //   const dadosTrilha: Trilha = await resTrilha.json();
-    //   setTrilha(dadosTrilha);
+      const dadosTrilha: tipoTrilha = await resTrilha.json();
+      setTrilha(dadosTrilha);
 
-    //   // ============================================
-    //   // 4. BUSCAR TODOS MÓDULOS DA TRILHA
-    //   // ============================================
+      // ============================================
+      // 4. BUSCAR TODOS MÓDULOS DA TRILHA
+      // ============================================
 
-    //   const resModulos = await fetch(
-    //     `${BACKEND_API}/modulos?trilha=${moduloSugerido.idTrilha}`,
-    //     {
-    //       headers: { 'Authorization': `Bearer ${token}` }
-    //     }
-    //   );
+      const resModulos = await fetch(`${API_MODULOS}`);
 
-    //   if (!resModulos.ok) throw new Error('Erro ao buscar módulos');
+      if (!resModulos.ok) throw new Error('Erro ao buscar módulos');
       
-    //   const todosModulos: Modulo[] = await resModulos.json();
-    //   setModulos(todosModulos);
+      const todosModulos: tipoModulo[] = await resModulos.json();
 
-    //   // ============================================
-    //   // 5. CALCULAR PROGRESSO
-    //   // ============================================
-    //   const resProgresso = await fetch(
-    //     `${BACKEND_API}/progressos/trilha/${moduloSugerido.idTrilha}/usuario/${usuario.id}`,
-    //     {
-    //       headers: { 'Authorization': `Bearer ${token}` }
-    //     }
-    //   );
+      const todosModulosDaTrilha = todosModulos.filter((m:tipoModulo) => m.idTrilha == moduloSugerido.idTrilha)
+      setModulos(todosModulosDaTrilha);
 
-    //   if (!resProgresso.ok) throw new Error('Erro ao calcular progresso');
+      // ============================================
+      // 5. CALCULAR PROGRESSO
+      // ============================================
+      const resProgresso = await fetch(`${API_PROGRESSOS}/${usuario.id}`);
+
+      if (!resProgresso.ok) throw new Error('Erro ao calcular progresso');
       
-    //   const dadosProgresso: ProgressoTrilha = await resProgresso.json();
-    //   setProgresso(dadosProgresso);
-    //   console.log('✅ Progresso:', `${dadosProgresso.percentual}%`);
+      const dadosProgresso: ProgressoTrilha = await resProgresso.json();
+      const dadosEspecificos = dadosProgresso
+      setProgresso(dadosProgresso);
+      console.log('✅ Progresso:', `${dadosProgresso.percentual}%`);
 
-    //   // ============================================
-    //   // 6. CRIAR PREVISÃO (204 No Content)
-    //   // ============================================
+      // ============================================
+      // 6. CRIAR PREVISÃO (204 No Content)
+      // ============================================
       
-    //   console.log('🎯 Salvando previsão...');
-    //   await fetch(
-    //     `${BACKEND_API}/previsoes/${usuario.id}`,
-    //     {
-    //       method: 'POST',
-    //       headers: {
-    //         'Content-Type': 'application/json',
-    //         'Authorization': `Bearer ${token}`
-    //       },
-    //       body: JSON.stringify({
-    //         area: usuario.area,
-    //         acessibilidade: usuario.acessibilidade,
-    //         modulos_concluidos: usuario.modulosConcluidos,
-    //         tempo_plataforma_dias: usuario.tempoPlataformaDias
-    //       })
-    //     }
-    //   );
+      console.log('🎯 Salvando previsão...');
+      await fetch(
+        `${API_PREVISOES}/${usuario.id}`,
+        {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({
+            area: usuario.area,
+            acessibilidade: usuario.acessibilidade,
+            modulos_concluidos: usuario.modulosConcluidos,
+            tempo_plataforma_dias: usuario.tempoPlataformaDias
+          })
+        }
+      );
 
-    // } catch (err) {
-    //   const message = err instanceof Error ? err.message : 'Erro desconhecido';
-    //   setError(message);
-    //   console.error('❌ Erro:', err);
-    // } finally {
-    //   setLoading(false);
-    // }
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Erro desconhecido';
+      setError(message);
+      console.error('❌ Erro:', err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   // ============================================
@@ -245,7 +223,7 @@ export default function Home() {
 
           {/* CARD TRILHA ATUAL */}
           {trilha && progresso && (
-            <div className="bg-gradient-to-br from-purple-600 via-purple-700 to-pink-600 rounded-2xl p-8 mb-8 shadow-2xl text-white relative overflow-hidden">
+            <div className="bg-linear-to-br from-purple-600 via-purple-700 to-pink-600 rounded-2xl p-8 mb-8 shadow-2xl text-white relative overflow-hidden">
               {/* Background decorativo */}
               <div className="absolute inset-0 opacity-10">
                 <div className="absolute top-0 left-0 w-96 h-96 bg-white rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2" />
@@ -261,7 +239,7 @@ export default function Home() {
                 {/* Barra de Progresso */}
                 <div className="w-full bg-white/20 rounded-full h-4 mb-6 overflow-hidden backdrop-blur-sm">
                   <div 
-                    className="bg-gradient-to-r from-green-400 to-emerald-500 h-full rounded-full transition-all duration-700 ease-out shadow-lg"
+                    className="bg-linear-to-r from-green-400 to-emerald-500 h-full rounded-full transition-all duration-700 ease-out shadow-lg"
                     style={{ width: `${progresso.percentual}%` }}
                   />
                 </div>
@@ -314,10 +292,10 @@ export default function Home() {
                   <Link
                     key={index}
                     to={`/trilhas/${modulo.idTrilha}/${modulo.titulo}`}
-                    className="bg-white rounded-xl p-6 shadow-sm hover:shadow-xl transition cursor-pointer flex items-center gap-6 group block" 
+                    className="bg-white rounded-xl p-6 shadow-sm hover:shadow-xl transition cursor-pointer flex items-center gap-6 group" 
                    >
                     {/* Ícone */}
-                    <div className="w-20 h-20 flex-shrink-0 bg-gradient-to-br from-gray-100 to-gray-200 rounded-2xl flex items-center justify-center text-4xl group-hover:scale-110 transition">
+                    <div className="w-20 h-20 shrink-0 bg-linear-to-br from-gray-100 to-gray-200 rounded-2xl flex items-center justify-center text-4xl group-hover:scale-110 transition">
                       {getTipoIcon(modulo.tipo)}
                     </div>
                     
@@ -347,7 +325,7 @@ export default function Home() {
                     </div>
                     
                     {/* Indicador */}
-                    <div className="w-12 h-12 flex-shrink-0 bg-gray-100 rounded-full flex items-center justify-center text-xl group-hover:bg-purple-100 transition">
+                    <div className="w-12 h-12 shrink-0 bg-gray-100 rounded-full flex items-center justify-center text-xl group-hover:bg-purple-100 transition">
                       🔗
                     </div>
                   </Link>
