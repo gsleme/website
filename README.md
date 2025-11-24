@@ -160,8 +160,11 @@ LEME/
 ## 🔗 Links do Projeto
 
 📁 **Repositório:** [https://github.com/gsleme/Leme-IA](https://github.com/gsleme/Leme-IA)
-▶️ **Pitch de Vendas:** *(inserir)*
+
+▶️ **Pitch de Vendas:** *([https://youtu.be/zT3GiHzV1J8] )*
+
 🧪 **Protótipo Figma:** *(https://www.figma.com/design/gnVqfcD4u3jNBHSixpjfkx/Untitled?node-id=28-41&t=0hvaGaCtp72abBgS-1)*
+
 📌 **Backlog (Trello / Jira):** *(https://www.notion.so/Backlog-da-Sprint-com-Checkboxes-Resumo-e-Observa-es-2316cd0b4d78801e85b1ceddda572c7e?source=copy_link)*
 
 ---
