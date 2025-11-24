@@ -6,7 +6,7 @@ export type PrevisaoIA ={
 export type Sugestao ={
   id: string;
   idUsuario: string;
-  idModulo: string; 
+  idTrilha: string; 
   dataSugestao: string;
 }
 

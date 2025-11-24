@@ -9,6 +9,7 @@ export type tipoUsuarioForm = {
 }
 
 export type tipoTokenInfo = {
+    idUsuario: string;
     id: string;
     area: string;
     acessibilidade: string;

@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
-import type { Sugestao } from '../../types/tipoDashboard'
 import type { ProgressoTrilha } from '../../types/tipoDashboard'
 import type { tipoTrilha } from '../../types/tipoTrilhas'
 import type { tipoModulo } from '../../types/tipoTrilhas'
@@ -11,6 +10,17 @@ const API_PREVISOES = import.meta.env.VITE_API_BASE_PREVISOES
 const API_PROGRESSOS = import.meta.env.VITE_API_BASE_PROGRESSOS
 const API_TRILHAS = import.meta.env.VITE_API_BASE_TRILHAS
 const API_MODULOS = import.meta.env.VITE_API_BASE_MODULOS
+
+// ============================================
+// TIPOS
+// ============================================
+
+interface SugestaoResponse {
+  id: string;
+  idUsuario: string;
+  idTrilha: string;  // ← MUDOU: agora é idTrilha, não idModulo
+  dataSugestao: string;
+}
 
 // ============================================
 // COMPONENTE
@@ -28,112 +38,257 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    console.log('👤 Usuario do contexto:', usuario);
+    
     if (usuario) {
+      const userId = usuario.id;
+      
+      if (!userId) {
+        console.error('❌ Usuario sem ID:', usuario);
+        setError('Erro: ID do usuário não encontrado. Faça login novamente.');
+        setLoading(false);
+        return;
+      }
+      
+      console.log('✅ userId válido:', userId);
       carregarDashboard();
+    } else {
+      console.warn('⚠️ Usuario não encontrado, redirecionando...');
+      navigate('/login');
     }
-  }, [usuario]);
+  }, [usuario, navigate]);
 
   // ============================================
   // CARREGAR DASHBOARD
   // ============================================
 
   const carregarDashboard = async () => {
-    if (!usuario) return;
+    if (!usuario) {
+      console.error('❌ carregarDashboard chamado sem usuario');
+      return;
+    }
+
+    const userId = usuario.id;
+    
+    if (!userId) {
+      setError('ID do usuário não encontrado. Faça login novamente.');
+      setLoading(false);
+      navigate('/login');
+      return;
+    }
+
+    console.log('🚀 Iniciando carregamento do dashboard para userId:', userId);
 
     setLoading(true);
     setError(null);
 
     try {
       // ============================================
-      // 1. CRIAR/BUSCAR SUGESTÃO (retorna idModulo)
+      // 1. CRIAR/BUSCAR SUGESTÃO (retorna idTrilha agora!)
       // ============================================
+      console.log('📡 Chamando API Sugestões:', `${API_SUGESTOES}/${userId}`);
       
-      const payload = {
-        area: usuario.area,
-        acessibilidade: usuario.acessibilidade,
-        modulos_concluidos: usuario.modulosConcluidos,
-        tempo_plataforma_dias: usuario.tempoPlataformaDias
-      }
-      console.log(payload)
       const resSugestao = await fetch(
-        `${API_SUGESTOES}/${usuario.id}`,
+        `${API_SUGESTOES}/${userId}`,
         {
           method: 'POST',
-          headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify(payload)
-        }
-      );
-
-      if (!resSugestao.ok) throw new Error('Erro ao criar sugestão');
-      
-      const dadosSugestao: Sugestao = await resSugestao.json();
-
-      // ============================================
-      // 2. BUSCAR MÓDULO SUGERIDO
-      // ============================================
-      const resModulo = await fetch(`${API_MODULOS}/${dadosSugestao.idModulo}`);
-
-      if (!resModulo.ok) throw new Error('Módulo não encontrado');
-      
-      const moduloSugerido: tipoModulo = await resModulo.json();
-
-      // ============================================
-      // 3. BUSCAR TRILHA (usando idTrilha do módulo)
-      // ============================================
-      const resTrilha = await fetch(`${API_TRILHAS}/${moduloSugerido.idTrilha}`);
-
-      if (!resTrilha.ok) throw new Error('Trilha não encontrada');
-      
-      const dadosTrilha: tipoTrilha = await resTrilha.json();
-      setTrilha(dadosTrilha);
-
-      // ============================================
-      // 4. BUSCAR TODOS MÓDULOS DA TRILHA
-      // ============================================
-
-      const resModulos = await fetch(`${API_MODULOS}`);
-
-      if (!resModulos.ok) throw new Error('Erro ao buscar módulos');
-      
-      const todosModulos: tipoModulo[] = await resModulos.json();
-
-      const todosModulosDaTrilha = todosModulos.filter((m:tipoModulo) => m.idTrilha == moduloSugerido.idTrilha)
-      setModulos(todosModulosDaTrilha);
-
-      // ============================================
-      // 5. CALCULAR PROGRESSO
-      // ============================================
-      const resProgresso = await fetch(`${API_PROGRESSOS}/${usuario.id}`);
-
-      if (!resProgresso.ok) throw new Error('Erro ao calcular progresso');
-      
-      const dadosProgresso: ProgressoTrilha = await resProgresso.json();
-      setProgresso(dadosProgresso);
-      console.log('✅ Progresso:', `${dadosProgresso.percentual}%`);
-
-      // ============================================
-      // 6. CRIAR PREVISÃO (204 No Content)
-      // ============================================
-      
-      console.log('🎯 Salvando previsão...');
-      await fetch(
-        `${API_PREVISOES}/${usuario.id}`,
-        {
-          method: 'POST',
-          headers: {'Content-Type': 'application/json'},
+          headers: {
+            'Content-Type': 'application/json',
+            ...(localStorage.getItem('token') && {
+              'Authorization': `Bearer ${localStorage.getItem('token')}`
+            })
+          },
           body: JSON.stringify({
             area: usuario.area,
             acessibilidade: usuario.acessibilidade,
-            modulos_concluidos: usuario.modulosConcluidos,
-            tempo_plataforma_dias: usuario.tempoPlataformaDias
+            modulos_concluidos: usuario.modulosConcluidos || 0,
+            tempo_plataforma_dias: usuario.tempoPlataformaDias || 0
           })
         }
       );
 
+      if (!resSugestao.ok) {
+        const errorText = await resSugestao.text();
+        console.error('❌ Erro na API Sugestões:', errorText);
+        throw new Error(`Erro ao criar sugestão: ${resSugestao.status} - ${errorText}`);
+      }
+      
+      const dadosSugestao: SugestaoResponse = await resSugestao.json();
+      console.log('✅ Sugestão criada:', dadosSugestao);
+      console.log('🔍 Estrutura completa:', JSON.stringify(dadosSugestao, null, 2));
+
+      // 🔥 FIX: Agora esperamos idTrilha, não idModulo
+      const idTrilha = dadosSugestao.idTrilha;
+      
+      if (!idTrilha) {
+        console.error('❌ idTrilha não encontrado na resposta:', dadosSugestao);
+        throw new Error('A API não retornou um ID de trilha válido.');
+      }
+
+      console.log('✅ idTrilha extraído:', idTrilha);
+
+      // ============================================
+      // 2. BUSCAR TRILHA DIRETAMENTE
+      // ============================================
+      console.log('📡 Buscando trilha:', idTrilha);
+      
+      const resTrilha = await fetch(`${API_TRILHAS}/${idTrilha}`, {
+        headers: {
+          ...(localStorage.getItem('token') && {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          })
+        }
+      });
+
+      if (!resTrilha.ok) {
+        throw new Error(`Trilha não encontrada: ${resTrilha.status}`);
+      }
+      
+      const dadosTrilha: tipoTrilha = await resTrilha.json();
+      setTrilha(dadosTrilha);
+      console.log('✅ Trilha encontrada:', dadosTrilha.titulo);
+
+      // ============================================
+      // 3. BUSCAR TODOS MÓDULOS DA TRILHA
+      // ============================================
+      console.log('📡 Buscando módulos da trilha:', idTrilha);
+      
+      const resModulos = await fetch(`${API_MODULOS}`, {
+        headers: {
+          ...(localStorage.getItem('token') && {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          })
+        }
+      });
+
+      if (!resModulos.ok) {
+        throw new Error(`Erro ao buscar módulos: ${resModulos.status}`);
+      }
+      
+      const todosModulos: tipoModulo[] = await resModulos.json();
+      console.log('📚 Total de módulos encontrados:', todosModulos.length);
+
+      // Filtrar módulos dessa trilha específica
+      const modulosDaTrilha = todosModulos.filter((m: tipoModulo) => 
+        String(m.idTrilha) === String(idTrilha)
+      );
+      
+      console.log('📚 Módulos da trilha filtrados:', modulosDaTrilha.length);
+      setModulos(modulosDaTrilha);
+
+      // ============================================ 
+      // 4. CALCULAR PROGRESSO (da trilha específica)
+      // ============================================
+      console.log('📡 Calculando progresso para trilha:', idTrilha);
+      
+      // Tentar buscar progresso da trilha específica primeiro
+      let progressoTrilha: ProgressoTrilha | null = null;
+      
+      try {
+        const resProgressoTrilha = await fetch(
+          `${API_PROGRESSOS}/trilha/${idTrilha}/usuario/${userId}`,
+          {
+            headers: {
+              ...(localStorage.getItem('token') && {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+              })
+            }
+          }
+        );
+
+        if (resProgressoTrilha.ok) {
+          progressoTrilha = await resProgressoTrilha.json();
+          console.log('✅ Progresso da trilha específica:', progressoTrilha);
+        }
+      } catch (err) {
+        console.warn('⚠️ Endpoint de progresso por trilha não disponível, tentando geral...');
+      }
+
+      // Se não encontrou progresso específico, tentar buscar geral
+      if (!progressoTrilha) {
+        const resProgresso = await fetch(`${API_PROGRESSOS}/${userId}`, {
+          headers: {
+            ...(localStorage.getItem('token') && {
+              'Authorization': `Bearer ${localStorage.getItem('token')}`
+            })
+          }
+        });
+
+        if (resProgresso.status === 404) {
+          console.log('⚠️ Nenhum progresso encontrado (usuário novo)');
+          // Criar progresso vazio
+          progressoTrilha = {
+            totalModulos: modulosDaTrilha.length,
+            modulosConcluidos: 0,
+            percentual: 0,
+            idsModulosConcluidos: []
+          };
+        } else if (!resProgresso.ok) {
+          throw new Error(`Erro ao buscar progresso: ${resProgresso.status}`);
+        } else {
+          const dadosProgresso = await resProgresso.json();
+          
+          // Se a resposta é um array de progressos, filtrar pela trilha
+          if (Array.isArray(dadosProgresso)) {
+            const progressosDaTrilha = dadosProgresso.filter(
+              (p: any) => modulosDaTrilha.some(m => m.id === p.idModulo)
+            );
+            
+            progressoTrilha = {
+              totalModulos: modulosDaTrilha.length,
+              modulosConcluidos: progressosDaTrilha.length,
+              percentual: Math.round((progressosDaTrilha.length / modulosDaTrilha.length) * 100),
+              idsModulosConcluidos: progressosDaTrilha.map((p: any) => p.idModulo)
+            };
+          } else {
+            // Se já é um objeto estruturado
+            progressoTrilha = dadosProgresso;
+          }
+        }
+      }
+
+      setProgresso(progressoTrilha);
+
+      // ============================================
+      // 5. CRIAR PREVISÃO (opcional)
+      // ============================================
+      console.log('🎯 Salvando previsão...');
+      
+      try {
+        const resPrevisao = await fetch(
+          `${API_PREVISOES}/${userId}`,
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              ...(localStorage.getItem('token') && {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+              })
+            },
+            body: JSON.stringify({
+              area: usuario.area,
+              acessibilidade: usuario.acessibilidade,
+              modulos_concluidos: usuario.modulosConcluidos || 0,
+              tempo_plataforma_dias: usuario.tempoPlataformaDias || 0
+            })
+          }
+        );
+
+        if (resPrevisao.ok) {
+          console.log('✅ Previsão salva com sucesso');
+        } else {
+          console.warn('⚠️ Erro ao salvar previsão (não crítico)');
+        }
+      } catch (err) {
+        console.warn('⚠️ Erro ao salvar previsão (continuando):', err);
+      }
+
+      console.log('🎉 Dashboard carregado com sucesso!');
+
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Erro desconhecido';
       setError(message);
-      console.error('❌ Erro:', err);
+      console.error('❌ Erro ao carregar dashboard:', err);
     } finally {
       setLoading(false);
     }
@@ -168,15 +323,15 @@ export default function Home() {
 
   if (loading) {
     return (
-        <main className="min-h-screen bg-gray-50 px-4 py-8">
-          <div className="max-w-7xl mx-auto">
-            <div className="flex flex-col items-center justify-center py-20">
-              <div className="w-16 h-16 border-4 border-purple-600 border-t-transparent rounded-full animate-spin mb-4" />
-              <p className="text-gray-600 text-lg">Carregando seu dashboard personalizado...</p>
-              <p className="text-gray-400 text-sm mt-2">Aguarde enquanto buscamos sua trilha ideal</p>
-            </div>
+      <main className="min-h-screen bg-gray-50 px-4 py-8">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex flex-col items-center justify-center py-20">
+            <div className="w-16 h-16 border-4 border-purple-600 border-t-transparent rounded-full animate-spin mb-4" />
+            <p className="text-gray-600 text-lg">Carregando seu dashboard personalizado...</p>
+            <p className="text-gray-400 text-sm mt-2">Aguarde enquanto buscamos sua trilha ideal</p>
           </div>
-        </main>
+        </div>
+      </main>
     );
   }
 
@@ -186,22 +341,30 @@ export default function Home() {
 
   if (error) {
     return (
-        <main className="min-h-screen bg-gray-50 px-4 py-8">
-          <div className="max-w-7xl mx-auto">
-            <div className="flex flex-col items-center justify-center py-20">
-              <div className="bg-red-50 border border-red-200 rounded-lg p-6 max-w-md w-full">
-                <h2 className="text-xl font-bold text-red-800 mb-2">❌ Erro ao carregar dashboard</h2>
-                <p className="text-red-600 mb-4">{error}</p>
+      <main className="min-h-screen bg-gray-50 px-4 py-8">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex flex-col items-center justify-center py-20">
+            <div className="bg-red-50 border border-red-200 rounded-lg p-6 max-w-md w-full">
+              <h2 className="text-xl font-bold text-red-800 mb-2">❌ Erro ao carregar dashboard</h2>
+              <p className="text-red-600 mb-4">{error}</p>
+              <div className="space-y-2">
                 <button
                   onClick={carregarDashboard}
                   className="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-lg transition"
                 >
                   Tentar Novamente
                 </button>
+                <button
+                  onClick={() => navigate('/login')}
+                  className="w-full bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded-lg transition"
+                >
+                  Voltar ao Login
+                </button>
               </div>
             </div>
           </div>
-        </main>
+        </div>
+      </main>
     );
   }
 
@@ -209,8 +372,8 @@ export default function Home() {
   // DASHBOARD
   // ============================================
 
-  if (usuario){
-  return (
+  if (usuario) {
+    return (
       <main className="min-h-screen bg-gray-50 px-4 py-8">
         <div className="max-w-7xl mx-auto">
           
@@ -218,14 +381,14 @@ export default function Home() {
           <div className="flex justify-between items-center mb-8">
             <h1 className="text-4xl font-black text-gray-900 tracking-tight">DASHBOARD</h1>
             <div className="flex flex-col items-end gap-1">
-              <span className="text-gray-600">Olá! 👋</span>
-              <span className="text-xl font-bold text-purple-600">{usuario.modulosConcluidos} módulos</span>
+              <span className="text-gray-600">Olá,! 👋</span>
+              <span className="text-xl font-bold text-purple-600">{usuario.modulosConcluidos || 0} módulos</span>
             </div>
           </div>
 
           {/* CARD TRILHA ATUAL */}
           {trilha && progresso && (
-            <div className="bg-linear-to-br from-purple-600 via-purple-700 to-pink-600 rounded-2xl p-8 mb-8 shadow-2xl text-white relative overflow-hidden">
+            <div className="bg-gradient-to-br from-purple-600 via-purple-700 to-pink-600 rounded-2xl p-8 mb-8 shadow-2xl text-white relative overflow-hidden">
               {/* Background decorativo */}
               <div className="absolute inset-0 opacity-10">
                 <div className="absolute top-0 left-0 w-96 h-96 bg-white rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2" />
@@ -241,7 +404,7 @@ export default function Home() {
                 {/* Barra de Progresso */}
                 <div className="w-full bg-white/20 rounded-full h-4 mb-6 overflow-hidden backdrop-blur-sm">
                   <div 
-                    className="bg-linear-to-r from-green-400 to-emerald-500 h-full rounded-full transition-all duration-700 ease-out shadow-lg"
+                    className="bg-gradient-to-r from-green-400 to-emerald-500 h-full rounded-full transition-all duration-700 ease-out shadow-lg"
                     style={{ width: `${progresso.percentual}%` }}
                   />
                 </div>
@@ -266,19 +429,22 @@ export default function Home() {
                 </div>
 
                 {/* Botão */}
-                {proximoModulo ? (
-                  <Link to = {`/trilhas/${proximoModulo.idTrilha}/${proximoModulo.titulo}`}
-                    className="w-full bg-white text-purple-700 font-bold py-4 px-6 rounded-xl hover:bg-gray-50 transition transform hover:scale-105 shadow-xl"
-                  >
-                    Continuar Trilha →
-                  </Link>
-                ) : (
-                  <button
-                    disabled
-                    className="w-full bg-white/20 text-white font-bold py-4 px-6 rounded-xl cursor-not-allowed"
-                  >
-                    ✅ Trilha Concluída!
-                  </button>
+                {(
+                  proximoModulo ? (
+                    <Link 
+                      to={`/trilhas/${proximoModulo.idTrilha}/${encodeURIComponent(proximoModulo.titulo)}`}
+                      className="block w-full bg-white text-purple-700 font-bold py-4 px-6 rounded-xl hover:bg-gray-50 transition transform hover:scale-105 shadow-xl text-center"
+                    >
+                      {progresso.modulosConcluidos === 0 ? 'Iniciar Trilha 🚀' : 'Continuar Trilha →'}
+                    </Link>
+                  ) : (
+                    <button
+                      disabled
+                      className="w-full bg-white/20 text-white font-bold py-4 px-6 rounded-xl cursor-not-allowed"
+                    >
+                      ✅ Trilha Concluída!
+                    </button>
+                  )
                 )}
               </div>
             </div>
@@ -292,12 +458,12 @@ export default function Home() {
               <div className="space-y-4">
                 {modulosRecomendados.map((modulo, index) => (
                   <Link
-                    key={index}
-                    to={`/trilhas/${modulo.idTrilha}/${modulo.titulo}`}
-                    className="bg-white rounded-xl p-6 shadow-sm hover:shadow-xl transition cursor-pointer flex items-center gap-6 group" 
-                   >
+                    key={modulo.id || index}
+                    to={`/trilhas/${modulo.idTrilha}/${encodeURIComponent(modulo.titulo)}`}
+                    className="bg-white rounded-xl p-6 shadow-sm hover:shadow-xl transition cursor-pointer flex items-center gap-6 group"
+                  >
                     {/* Ícone */}
-                    <div className="w-20 h-20 shrink-0 bg-linear-to-br from-gray-100 to-gray-200 rounded-2xl flex items-center justify-center text-4xl group-hover:scale-110 transition">
+                    <div className="w-20 h-20 shrink-0 bg-gradient-to-br from-gray-100 to-gray-200 rounded-2xl flex items-center justify-center text-4xl group-hover:scale-110 transition">
                       {getTipoIcon(modulo.tipo)}
                     </div>
                     
@@ -370,12 +536,14 @@ export default function Home() {
               <div className="text-4xl">📊</div>
               <div>
                 <p className="text-sm text-gray-500 mb-1">Dias na Plataforma</p>
-                <p className="text-lg font-bold text-gray-900">{usuario.tempoPlataformaDias} dias</p>
+                <p className="text-lg font-bold text-gray-900">{usuario.tempoPlataformaDias || 0} dias</p>
               </div>
             </div>
           </section>
         </div>
       </main>
-  );
-}
+    );
+  }
+
+  return null;
 }
