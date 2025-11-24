@@ -6,39 +6,39 @@ function Faq () {
   const [aberto, setAberto] = useState(0)
   const faqs: { pergunta: string; resposta: string }[] = [
     {
-      pergunta: 'Lorem ipsum dolor sit amet?',
+      pergunta: 'Como posso criar minha conta na Leme?',
       resposta:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptatibus, sint.'
+        'Você pode se cadastrar clicando em "Criar Perfil" no canto superior da tela. Você precisará de um e-mail válido e criará uma senha para começar a aprender!'
     },
     {
-      pergunta: 'Lorem ipsum, dolor sit amet consectetur adipisicing?',
+      pergunta: 'Como faço para acessar os cursos após o cadastro?',
       resposta:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Qui distinctio aliquam temporibus sed. Possimus, doloribus.'
+        'Após fazer login, você será direcionado ao seu Dashboard. Lá, você pode navegar até "Trilhas" ou "Cursos" para escolher por onde começar e iniciar o conteúdo.'
     },
     {
-      pergunta: 'Lorem ipsum dolor sit?',
+      pergunta: 'O que eu preciso ter no computador para fazer os cursos?',
       resposta:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Ea ipsam voluptates at.'
+        'A maioria dos cursos não requer um sistema operacional ou software proprietário instalado. No entanto, há algumas exceções: Se o curso precisar de alguma instalação, você terá acesso ao passo a passo para fazer o download em seu computador.'
     },
     {
-      pergunta: 'Lorem ipsum dolor sit amet?',
+      pergunta: 'Quais serão os próximos cursos a serem lançados?',
       resposta:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptatibus, sint.'
+        'Temos diversos cursos sendo desenvolvidos simultaneamente. Caso você tenha sentido a falta de algum tema no nosso catálogo, estamos sempre abertos para receber sugestões!'
     },
     {
-      pergunta: 'Lorem ipsum dolor sit amet?',
+      pergunta: 'O que são os pontos de experiência (XP)?',
       resposta:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptatibus, sint.'
+        'Os pontos de experiência (XP) são a forma como registramos o seu progresso e dedicação na plataforma. Você ganha XP ao completar vídeos, leituras, e principalmente, ao finalizar os exercícios e módulos.'
     },
     {
-      pergunta: 'Lorem ipsum dolor sit amet?',
+      pergunta: 'O que acontece com a experiência que ganho?',
       resposta:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptatibus, sint.'
+        'A sua experiência (XP) é somada ao seu perfil, ajudando você a subir de nível. O nível serve como um registro público do seu conhecimento e engajamento na Leme, e pode desbloquear futuros recursos ou reconhecimentos.'
     },
     {
-      pergunta: 'Lorem ipsum dolor sit amet?',
+      pergunta: 'A Leme é gratuita ou possui algum tipo de assinatura?',
       resposta:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptatibus, sint.'
+        'No momento, a Leme oferece acesso gratuito a todos os cursos'
     }
   ]
   return (
