@@ -4,6 +4,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import type { ProgressoTrilha } from '../../types/tipoDashboard'
 import type { tipoTrilha } from '../../types/tipoTrilhas'
 import type { tipoModulo } from '../../types/tipoTrilhas'
+import { formatToLink } from '../../utils/formatarTitulo';
 
 const API_SUGESTOES = import.meta.env.VITE_API_BASE_SUGESTOES
 const API_PREVISOES = import.meta.env.VITE_API_BASE_PREVISOES
@@ -116,8 +117,7 @@ export default function Home() {
       const dadosSugestao: SugestaoResponse = await resSugestao.json();
       console.log('✅ Sugestão criada:', dadosSugestao);
       console.log('🔍 Estrutura completa:', JSON.stringify(dadosSugestao, null, 2));
-
-      // 🔥 FIX: Agora esperamos idTrilha, não idModulo
+      
       const idTrilha = dadosSugestao.idTrilha;
       
       if (!idTrilha) {
@@ -432,7 +432,7 @@ export default function Home() {
                 {(
                   proximoModulo ? (
                     <Link 
-                      to={`/trilhas/${proximoModulo.idTrilha}/${encodeURIComponent(proximoModulo.titulo)}`}
+                      to={`/trilhas/${proximoModulo.idTrilha}/${formatToLink(proximoModulo.titulo)}`}
                       className="block w-full bg-white text-purple-700 font-bold py-4 px-6 rounded-xl hover:bg-gray-50 transition transform hover:scale-105 shadow-xl text-center"
                     >
                       {progresso.modulosConcluidos === 0 ? 'Iniciar Trilha 🚀' : 'Continuar Trilha →'}
@@ -459,7 +459,7 @@ export default function Home() {
                 {modulosRecomendados.map((modulo, index) => (
                   <Link
                     key={modulo.id || index}
-                    to={`/trilhas/${modulo.idTrilha}/${encodeURIComponent(modulo.titulo)}`}
+                    to={`/trilhas/${modulo.idTrilha}/${formatToLink(modulo.titulo)}`}
                     className="bg-white rounded-xl p-6 shadow-sm hover:shadow-xl transition cursor-pointer flex items-center gap-6 group"
                   >
                     {/* Ícone */}

@@ -107,7 +107,7 @@ function Header ({ visivel }: { visivel: boolean }) {
   }
 
   return (
-    <header className='flex flex-col items-center w-screen h-18'>
+    <header className='flex flex-col items-center w-screen h-18 bg-white'>
       <div className='flex flex-col justify-center items-center px-6 py-2 w-full fixed bg-white z-2'>
         <div className='flex justify-between items-center w-full max-w-240 bg-white z-3'>
           <Link to='/dashboard'>
